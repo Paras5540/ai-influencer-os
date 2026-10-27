@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Riya — Content Gallery</title>
+<style>
+  :root{--bg:#0a0b10;--panel:#12141c;--line:#242836;--txt:#eef0f7;--mut:#8c92a6;--acc:#ff4d8d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{padding:22px 20px 10px;max-width:1100px;margin:0 auto}
+  h1{margin:0;font-size:20px;letter-spacing:-.3px}
+  .sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .pill{display:inline-block;font-size:11px;padding:3px 8px;border-radius:99px;
+        border:1px solid var(--line);color:var(--mut);margin-right:6px}
+  main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+        display:flex;flex-direction:column}
+  .card video{width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+  .body{padding:12px;font-size:13px;display:flex;flex-direction:column;gap:8px}
+  .hook{font-weight:600}
+  .cap{color:var(--mut);font-size:12px;white-space:pre-wrap;max-height:64px;overflow:hidden}
+  a.dl{font-size:12px;color:var(--acc);text-decoration:none}
+  .empty{color:var(--mut);font-size:14px}
+  footer{max-width:1100px;margin:0 auto;padding:0 20px 40px;color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Riya — Content Gallery</h1>
+  <div class="sub">
+    <span class="pill">AI-generated character</span>
+    <span class="pill" id="count">loading…</span>
+  </div>
+</header>
+<main>
+  <div class="grid" id="grid"><div class="empty">Loading…</div></div>
+</main>
+<footer>Har reel GitHub Actions ne banayi hai (face-locked master + Hindi voice + captions).
+  Ye page read-only hai — dashboard ke liye alag server chahiye.</footer>
+<script>
+fetch('index.json?t=' + Date.now())
+  .then(r => r.json())
+  .then(items => {
+    const g = document.getElementById('grid');
+    document.getElementById('count').textContent = items.length + ' reels';
+    if (!items.length) { g.innerHTML = '<div class="empty">Abhi koi reel nahi — Actions me run karo.</div>'; return; }
+    g.innerHTML = items.map(i => `
+      <div class="card">
+        <video src="${i.video}" poster="" controls preload="metadata" playsinline></video>
+        <div class="body">
+          <div class="hook">${(i.hook||'').replace(/</g,'&lt;')}</div>
+          <div class="cap">${(i.caption||'').replace(/</g,'&lt;')}</div>
+          <a class="dl" href="${i.video}" download>Download ↓</a>
+        </div>
+      </div>`).join('');
+  })
+  .catch(e => {
+    document.getElementById('grid').innerHTML =
+      '<div class="empty">index.json nahi mila. Ye page repo ke <code>content/</code> folder se serve hota hai.</div>';
+  });
+</script>
+</body>
+</html>
