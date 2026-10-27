@@ -22,7 +22,7 @@ SHOTS = ROOT / "assets" / "shots"
 MUSIC = ROOT / "assets" / "music"
 OUT = ROOT / "out"
 W, H = 1080, 1920
-SHOT_SEC = 1.1
+SHOT_SEC = float(os.getenv("SHOT_SEC", "1.1"))
 
 CAPTIONS = [
     ("3 OUTFITS, EK DIN", "Ek din, teen look. Kaunsa best laga? 👇\n\n"
@@ -144,13 +144,13 @@ def pick_music():
     return random.choice(tracks) if tracks else None
 
 
-def build(count=1):
+def build(count=1, hooks=None):
     OUT.mkdir(parents=True, exist_ok=True)
     day = int(time.time() // 86400)
     for k in range(count):
         n_shots = random.Random(day + k).choice([6, 7, 8])
         chosen = pick(n_shots, day * 10 + k)
-        hook = hook_for(chosen[0])
+        hook = (hooks[(k % len(hooks))] if hooks else hook_for(chosen[0]))
         tag = (manifest().get(Path(chosen[0]).name) or {}).get("tag", "fashion")
         caption = CAPTIONS_BY_TAG.get(tag, CAPTIONS[(day + k) % len(CAPTIONS)])
         total = round(n_shots * SHOT_SEC, 2)
@@ -219,5 +219,6 @@ def build(count=1):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--count", type=int, default=1)
+    ap.add_argument("--hook", action="append", help="custom hook (repeatable)")
     a = ap.parse_args()
-    build(a.count)
+    build(a.count, a.hook)
