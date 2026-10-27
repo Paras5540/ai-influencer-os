@@ -94,6 +94,8 @@ jobs:
       - name: Run pipeline
         env:
           BUILDS_PER_DAY: "3"
+          TTS_ORDER: "google,edge"   # cloud IPs pe Edge 403 deta hai, Google TTS pehle
+          TTS_PROVIDER: "google"
         run: |
           python scripts/ci_run.py --task "${{ steps.t.outputs.task }}" --count "${{ steps.t.outputs.count }}"
 

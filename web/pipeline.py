@@ -20,7 +20,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from lib import free_stack, media, providers  # noqa: E402
+from lib import free_stack, media, providers, voice as voice_lib  # noqa: E402
 import db  # noqa: E402
 
 RENDERS = db.DATA / "renders"
@@ -148,33 +148,11 @@ def _image(ch, item, workdir):
 
 
 def _voice(ch, text, out):
-    voice = ch.get("voice", {})
-    provider = _cfg("TTS_PROVIDER", voice.get("provider", "edge"))
-    if provider == "elevenlabs" and _setting("ELEVENLABS_API_KEY") and not str(voice.get("elevenlabs_voice_id", "")).startswith("REPLACE"):
-        try:
-            os.environ["ELEVENLABS_API_KEY"] = _setting("ELEVENLABS_API_KEY")
-            providers.eleven_tts(text, voice["elevenlabs_voice_id"],
-                                 os.environ["ELEVENLABS_API_KEY"], "eleven_multilingual_v2",
-                                 voice.get("elevenlabs_settings", {}), str(out))
-            db.log("voice: ElevenLabs", "info", "voice")
-            return out
-        except Exception as e:  # noqa: BLE001
-            db.log(f"ElevenLabs failed, falling back to free Edge TTS: {str(e)[:120]}", "warn", "voice")
-    free_stack.edge_tts(
-        text, str(out),
-        voice=voice.get("edge_voice", "hi-IN-SwaraNeural"),
-        rate=voice.get("edge_rate", "+4%"),
-        pitch=voice.get("edge_pitch", "+4Hz"))
-    db.log("voice: Edge TTS (free)", "info", "voice")
+    """Fallback chain: ElevenLabs -> Edge -> Google TTS."""
+    os.environ.setdefault("TTS_PROVIDER", _cfg("TTS_PROVIDER", "edge"))
+    ep = json.loads((ROOT / "config" / "endpoints.json").read_text(encoding="utf-8"))
+    voice_lib.speak(text, ch, ep, str(out))
     return out
-
-
-def _video_size():
-    """LOW_MEM=1 -> 720x1280 (free 512MB-1GB hosts). Warna 1080x1920."""
-    if os.getenv("LOW_MEM", "0") == "1":
-        return 720, 1280
-    h = int(os.getenv("VIDEO_HEIGHT", "1920"))
-    return (1080, 1920) if h >= 1920 else (720, 1280)
 
 
 def _kenburns(image, dur, out):
