@@ -78,9 +78,18 @@ def collect():
         dest_dir.mkdir(parents=True, exist_ok=True)
         shutil.copy(vid, dest_dir / "final.mp4")
         shutil.copy(meta_path, dest_dir / "item.json")
+        poster = ""
+        thumb = meta_path.parent / "thumb.jpg"
+        if thumb.exists():
+            shutil.copy(thumb, dest_dir / "thumb.jpg")
+            poster = f"{pid}/thumb.jpg"
         index.append({"id": pid, "hook": m.get("hook", ""), "caption": m.get("caption_instagram", ""),
                       "status": m.get("status", "queued"), "created": m.get("created", ""),
-                      "video": f"{pid}/final.mp4"})
+                      "video": f"{pid}/final.mp4", "poster": poster})
+    for it in index:
+        if not it.get("poster"):
+            cand = CONTENT / it["id"] / "thumb.jpg"
+            it["poster"] = f"{it['id']}/thumb.jpg" if cand.exists() else ""
     index = sorted(index, key=lambda x: x.get("created", ""), reverse=True)[:12]  # latest 40
     index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2))
     # purane folders hatao (repo size control)
