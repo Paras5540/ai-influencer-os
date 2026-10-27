@@ -157,7 +157,7 @@ def build_one(row, idx, ep):
             print(f"  ! script failed ({str(e)[:80]}) — template use kar rahe hain")
             item = dict(STUB, topic=row["topic"], pillar=row["pillar"], hook=row["topic"][:40],
                         caption_instagram=f"{row['topic']}\n\n#reels #mumbai #AIgeneratedcharacter")
-    name = f"{today()}-{idx:02d}-{slug(item['topic'], 28)}"
+    name = f"{today()}-{idx:02d}-{slug(item['topic'], 26)}-{datetime.now().strftime('%H%M%S')}"
     workdir = OUT / name
     workdir.mkdir(parents=True, exist_ok=True)
     print(f"  script: {item['hook']}")
