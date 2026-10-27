@@ -39,5 +39,11 @@
     "token_url": "https://auth.fanvue.com/oauth2/token",
     "default_price_cents": 699,
     "audience": "subscribers"
+  },
+  "motion": {
+    "endpoint": "fal-ai/kling-video/v1.6/pro/motion-control",
+    "alt_endpoint": "fal-ai/wan/v2.2-animate/motion-transfer",
+    "_note": "Licensed/CC0 reference clip + character image -> motion transfer",
+    "_sources": "https://www.pexels.com/search/videos/dance/ \u00b7 https://pixabay.com/videos/search/dance/ \u00b7 https://coverr.co/search?q=dance"
   }
 }
