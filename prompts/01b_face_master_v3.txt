@@ -1,0 +1,39 @@
+# 01b — MASTER FACE PROMPT (v3 — "Riya", girl-next-door hot)
+
+Ek baar chalao. Jo image aaye wahi hamesha ke liye identity hai. Dobara generate nahi karna.
+
+---
+
+## Prompt
+
+Photorealistic frontal portrait of an original 23-year-old Indian woman, not resembling any real person.
+Warm medium-tan skin with real pore texture, light freckles across the nose and upper cheeks, a small
+mole on the left jawline, a faint 1 cm scar above the right brow. Soft oval face, gentle rounded jawline,
+high soft cheekbones. Heavier-lidded dark brown almond eyes with outer corners angled slightly down,
+visible iris fibres, natural lashes, no eyeliner. Softly rounded nose with a slightly wider tip. Full lips
+with a fuller lower lip, natural dusty-rose tint, slight gloss. Relaxed closed-lip half-smile with one
+corner raised, chin very slightly down, looking into the lens. Dark espresso-brown hair with a centre
+parting, pulled into a low loose ponytail with soft face-framing strands and light frizz. Tiny gold stud
+earrings. Matte black oversized cotton sweatshirt, sleeves pushed up. Standing against an off-white
+plaster wall, warm hard late-afternoon sunlight from the left casting a soft shadow of her profile on the
+wall. Head-and-shoulders, phone camera at 26 mm, eye level, natural sensor noise, no studio lighting,
+no beauty retouching, no airbrushing, visible skin texture, a few loose strands. Vertical 3:4, eyes on
+the upper third. No text, no watermark, no logo.
+
+---
+
+## Kya copy kiya, kya nahi (important)
+
+**Copy kiya (style DNA):** over-shoulder pose, hard warm sun from left, specular highlight, closed-lip
+asymmetric half smile, centre part + messy ponytail, black oversized top, minimal gold, single colour
+pop prop, off-white wall.
+
+**Copy NAHI kiya:** kisi real insaan ka face. Ye deliberately different bone structure hai — soft oval
+face, downturned outer eye corners, wider nose tip, fuller lower lip, freckles, mole left jawline.
+Isi wajah se ye "inspired by", "clone of" nahi hai.
+
+## Reject karo agar
+- Aankh ke outer corner upar ja rahe hain (ye doosri identity lagti hai)
+- Freckles ya mole gayab
+- Skin plastic / airbrushed
+- Eyeliner aa gaya

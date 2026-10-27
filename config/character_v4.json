@@ -1,0 +1,103 @@
+{
+  "character_id": "riya_v4",
+  "name": "Riya Malhotra",
+  "age": 24,
+  "city": "Mumbai (Bandra / Andheri)",
+  "persona_one_liner": "24, Mumbai. Golden-tan, strong brows, hoop earrings — editorial confidence with girl-next-door warmth. Public content tasteful, premium content for subscribers.",
+  "business_model": "public funnel (IG/Shorts) -> premium subscription (Fanvue)",
+
+  "_provenance": {
+    "note": "Original synthetic identity. NOT a copy of any real person. Reference photos se sirf STYLE/archetype liya gaya — face deliberately different person hai.",
+    "archetype": "strong thick brows, golden-tan dewy skin, warm brown almond eyes, full lips, hoop earrings, auburn-brown layered hair, off-white plaster wall, hard warm daylight",
+    "style_dna_from_reference": [
+      "over-shoulder back glance, body turned away, chin near shoulder",
+      "hard warm daylight from camera left + specular highlight on cheekbone and nose",
+      "closed-lip asymmetric half smile, direct eye contact",
+      "half-up messy ponytail, face-framing strands, backlit frizz",
+      "matte black oversized tee + small gold hoops, no necklace",
+      "single colour pop prop: glossy red plastic chair against white plaster wall"
+    ],
+    "deliberately_different": [
+      "shorter rounded-oval face (reference is long)",
+      "outer eye corners slightly UPTURNED (reference is level/hooded)",
+      "nose with a small bridge bump + wider soft tip (reference is narrow/straight)",
+      "fuller lower lip, softer cupid's bow",
+      "freckles across nose + mole on left jawline (reference has neither)",
+      "thicker soft-arched brows (reference is straighter)"
+    ]
+  },
+
+  "identity_lock": {
+    "face": "shorter rounded-oval face, soft but defined cheekbones, gently rounded jawline, soft chin",
+    "eyes": "large dark warm-brown almond eyes, outer corners slightly turned UP, visible iris fibres, subtle eyeliner only on upper lash line, natural lashes",
+    "brows": "naturally thick dark brows with a soft arch and tapered ends; tiny 1cm scar above the RIGHT brow",
+    "nose": "small bump on the bridge, slightly wider soft tip",
+    "lips": "full with a fuller lower lip, soft cupid's bow, rosy-pink gloss",
+    "skin": "warm golden-tan, dewy, visible pores, light freckles across nose bridge + upper cheeks, small dark mole on the LEFT jawline",
+    "hair": "dark auburn-brown with warm highlights, long layers, half-up loose messy ponytail, face-framing strands, light frizz",
+    "body": "164 cm, slim-soft, natural Indian proportions, no exaggeration",
+    "always_on": ["small gold hoop earrings"],
+    "optional": ["thin gold chain for evening/saree looks"],
+    "never": [
+      "different hair colour or straightened hair",
+      "airbrushed plastic skin",
+      "freckles or mole removed",
+      "exaggerated body proportions",
+      "heavy smoky eye or false lashes"
+    ]
+  },
+
+  "voice": {
+    "provider": "edge",
+    "edge_voice": "hi-IN-SwaraNeural",
+    "edge_rate": "+6%",
+    "edge_pitch": "+8Hz",
+    "elevenlabs_voice_id": "REPLACE_WITH_ELEVENLABS_ID_IF_YOU_UPGRADE",
+    "language": "Hindi (Devanagari) + light Hinglish",
+    "tone": "soft, low, slightly husky, close-mic — jaise ek insaan se baat kar rahi ho",
+    "banned": ["news anchor tone", "screaming", "fake excitement", "corporate Hindi"]
+  },
+
+  "tiers": {
+    "public": {
+      "platforms": ["instagram_reels", "youtube_shorts"],
+      "rating": "sfw",
+      "allowed": ["oversized tee", "fitted dresses", "jeans", "gym wear", "saree", "swimwear at beach"],
+      "never": ["nudity", "lingerie", "see-through", "explicit text", "'subscribe for nudes' in caption"],
+      "caption_rule": "Caption me sexual content bechna mana hai. Sirf bio link. Meta caption hatata hai, link rehne deta hai."
+    },
+    "premium": {
+      "platform": "fanvue",
+      "rating": "glamour",
+      "allowed": ["lingerie", "boudoir", "implied with coverage", "wet shirt", "oversized shirt + underwear", "saree drape"],
+      "never": ["explicit sexual acts", "genitalia", "any under-18 cue", "real person's face", "school uniform", "baby voice"],
+      "price_band_inr": [299, 1499],
+      "post_frequency_per_day": 2
+    }
+  },
+
+  "content_pillars": [
+    { "name": "glow_up_honest", "share": 0.25, "example": "no-makeup se shoot-ready, 10 min" },
+    { "name": "city_life", "share": 0.2, "example": "Bandra mein 200 rupaye ka best coffee" },
+    { "name": "dating_tea", "share": 0.2, "example": "dating apps pe red flag #1" },
+    { "name": "desi_looks", "share": 0.15, "example": "ek saree, teen drape" },
+    { "name": "premium_teaser", "share": 0.2, "example": "naya set aaya, link bio me" }
+  ],
+
+  "posting": {
+    "timezone": "Asia/Kolkata",
+    "public_slots": ["12:30", "20:30"],
+    "premium_slots": ["09:00", "22:00"],
+    "per_week_public": 12,
+    "always_disclose_ai": true,
+    "ai_label_text": "AI-generated character"
+  },
+
+  "video_spec": {
+    "aspect": "9:16",
+    "resolution": "1080x1920",
+    "fps": 30,
+    "target_duration_sec": 12,
+    "caption_style": "bold white, black outline, lower third"
+  }
+}

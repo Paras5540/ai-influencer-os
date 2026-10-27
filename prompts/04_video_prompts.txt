@@ -1,0 +1,21 @@
+# 04 — VIDEO PROMPTS
+
+## A) Talking head (audio-driven, preferred — this is the one that looks real)
+Provide: scene image + audio file. Prompt is short, because the audio drives the face.
+
+"Subtle natural head movement, realistic blinking, tiny eyebrow reactions, lips sync to the audio,
+shoulders barely moving, hair strands drifting. Camera locked, no zoom, no cuts.
+Same person, same face, same clothes as the image. Photorealistic, phone-camera video."
+
+## B) Trend / dance replication (image + reference video)
+Use a motion-transfer model (Kling Motion Control / Wan Animate / HeyGen Motion Control class).
+Prompt: "Same person as the reference image performing the exact motion of the reference video."
+
+## C) B-roll (no audio, for cutaways)
+"Slow handheld push-in on her face, she looks away then back to camera, street light moving behind her.
+Shallow depth of field, natural grain, 24fps look."
+
+## Hard rules
+- One shot per generation. No dialogue in the prompt for talking head (audio does the talking).
+- Never ask the model to "change her face" or "make her prettier" — that is where identity breaks.
+- 720p is enough for Reels; 1080p doubles the cost for no visible gain on a phone screen.

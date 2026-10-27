@@ -1,0 +1,98 @@
+{
+  "name": "AI Influencer — Auto Post (Reels)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "30 9 * * *" }] }
+      },
+      "id": "a1", "name": "Schedule 09:30 IST", "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2, "position": [-620, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Rotates the topic from the 30-day calendar\nconst cal=[\n {pillar:'city_life',topic:'Bandra mein 200 rupaye mein best coffee'},\n {pillar:'fashion_on_budget',topic:'ek kurti teen looks'},\n {pillar:'self_care_habits',topic:'raat ko phone side rakhne ka 5 minute rule'},\n {pillar:'money_tips',topic:'salary aate hi 3 hisse'},\n {pillar:'relatable_humour',topic:'monday morning ka sach'}\n];\nconst day=Math.floor(Date.now()/86400000);\nconst row=cal[day%cal.length];\nreturn [{json:{...row, day}}];"
+      },
+      "id": "a2", "name": "Pick Topic", "type": "n8n-nodes-base.code",
+      "typeVersion": 2, "position": [-400, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={{$env.GEMINI_API_KEY}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"systemInstruction\": {\"parts\":[{\"text\":\"You are the content brain for Indian AI influencer Ira, 24, Mumbai. Hindi Devanagari + light Hinglish. Warm, cheeky, zero salesy. Return STRICT JSON only.\"}]},\n  \"contents\": [{\"role\":\"user\",\"parts\":[{\"text\":\"Pillar: {{$json.pillar}}. Topic: {{$json.topic}}. Return JSON with keys: topic, hook, script (30-42 Hindi words), expression, outfit, scene, camera, light, grade, on_screen_hook, caption_instagram, caption_youtube, music_mood.\"}]}],\n  \"generationConfig\": {\"temperature\":0.9,\"responseMimeType\":\"application/json\"}\n}",
+        "options": {}
+      },
+      "id": "a3", "name": "Write Script (Gemini)", "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2, "position": [-160, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw=$json.candidates[0].content.parts[0].text;\nconst s=JSON.parse(raw.replace(/```json|```/g,''));\nreturn [{json:{...s, scenePrompt:`Using the reference image as the exact identity of the woman, keep her face 100% unchanged. SCENE: ${s.scene}. OUTFIT: ${s.outfit}. EXPRESSION: ${s.expression}. CAMERA: ${s.camera}. LIGHT: ${s.light}. GRADE: ${s.grade}. Photorealistic phone-camera realism, visible skin texture, no retouching, vertical 9:16, no text, no watermark.`}}];"
+      },
+      "id": "a4", "name": "Parse Script", "type": "n8n-nodes-base.code",
+      "typeVersion": 2, "position": [80, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana/edit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ prompt: $json.scenePrompt, image_urls: [$env.MASTER_FACE_URL], num_images: 1, aspect_ratio: '9:16' }) }}",
+        "options": {}
+      },
+      "id": "a5", "name": "Scene Image (face-locked)", "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2, "position": [320, 0]
+    },
+    {
+      "parameters": { "amount": 20, "unit": "seconds" },
+      "id": "a6", "name": "Wait for render", "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1, "position": [540, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// fal queue: poll the status url, then return the video url\nconst j=$json;\nreturn [{json:{requestId:j.request_id,statusUrl:j.status_url,responseUrl:j.response_url}}];"
+      },
+      "id": "a7", "name": "Job Handle", "type": "n8n-nodes-base.code",
+      "typeVersion": 2, "position": [760, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.responseUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "a8", "name": "Fetch Result", "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2, "position": [980, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Optional: hand the video to Blotato/Buffer for scheduling instead of direct IG\nconst url=$json.video?.url || $json.video_url || $json.url;\nif(!url) throw new Error('No video url in fal response: '+JSON.stringify($json).slice(0,300));\nreturn [{json:{videoUrl:url}}];"
+      },
+      "id": "a9", "name": "Extract Video URL", "type": "n8n-nodes-base.code",
+      "typeVersion": 2, "position": [1200, 0]
+    }
+  ],
+  "connections": {
+    "Schedule 09:30 IST": { "main": [[{ "node": "Pick Topic", "type": "main", "index": 0 }]] },
+    "Pick Topic": { "main": [[{ "node": "Write Script (Gemini)", "type": "main", "index": 0 }]] },
+    "Write Script (Gemini)": { "main": [[{ "node": "Parse Script", "type": "main", "index": 0 }]] },
+    "Parse Script": { "main": [[{ "node": "Scene Image (face-locked)", "type": "main", "index": 0 }]] },
+    "Scene Image (face-locked)": { "main": [[{ "node": "Wait for render", "type": "main", "index": 0 }]] },
+    "Wait for render": { "main": [[{ "node": "Job Handle", "type": "main", "index": 0 }]] },
+    "Job Handle": { "main": [[{ "node": "Fetch Result", "type": "main", "index": 0 }]] },
+    "Fetch Result": { "main": [[{ "node": "Extract Video URL", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1", "timezone": "Asia/Kolkata" },
+  "pinData": {},
+  "meta": {
+    "instanceId": "ai-influencer-os",
+    "note": "Set env vars GEMINI_API_KEY, MASTER_FACE_URL (public URL of your master.png). Add an HTTP Header Auth credential named 'fal' with header Authorization = Key <FAL_KEY>. Chain the last node into your publisher (Blotato / Instagram Graph)."
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "character_id": "riya_v2",
+  "name": "Riya Malhotra",
+  "age": 23,
+  "city": "Mumbai (Bandra / Andheri)",
+  "persona_one_liner": "23-year-old Mumbai girl — glam but real. Fashion, city nights, gym, sach bolti hai. Premium content for subscribers, public content tasteful.",
+  "business_model": "public funnel (IG/Shorts) -> premium subscription (Fanvue)",
+
+  "identity_lock": {
+    "face": "heart-shaped, high soft cheekbones, defined natural jawline",
+    "eyes": "large dark-hazel almond eyes, detailed iris fibres, upturned outer corners",
+    "brows": "naturally full dark brows, slight arch, faint 2cm scar on the LEFT eyebrow tail",
+    "nose": "straight with a small bump, delicate gold stud on the LEFT nostril",
+    "lips": "full, natural rose tint, glossy finish, one slightly crooked lower front tooth",
+    "skin": "warm medium-tan, visible pores, faint freckles across the nose, small beauty spot on the RIGHT cheekbone",
+    "hair": "long dark brown with caramel balayage, blown out with volume, falls over one shoulder",
+    "body": "slim-athletic, 165 cm, natural Indian proportions, not exaggerated",
+    "always_on": ["gold hoop earrings", "thin gold chain", "gold nose stud", "thin silver ring on right hand"],
+    "never": ["airbrushed plastic skin", "face-filler look", "different hair colour", "heavy glam makeup in casual shots"]
+  },
+
+  "voice": {
+    "provider": "edge",
+    "edge_voice": "hi-IN-SwaraNeural",
+    "edge_rate": "+8%",
+    "edge_pitch": "+15Hz",
+    "elevenlabs_voice_id": "REPLACE_WITH_ELEVENLABS_ID_IF_YOU_UPGRADE",
+    "language": "Hindi (Devanagari) + light Hinglish",
+    "tone": "soft, playful, slightly husky, like talking to one person — never broadcast-y",
+    "banned": ["news anchor tone", "screaming", "fake excitement", "corporate Hindi"]
+  },
+
+  "tiers": {
+    "public": {
+      "platforms": ["instagram_reels", "youtube_shorts"],
+      "rating": "sfw",
+      "allowed": ["fitted dresses", "shorts", "gym wear", "swimwear at beach", "bikini top with shirt over"],
+      "never": ["nudity", "lingerie", "see-through", "explicit text", "'subscribe for nudes' in caption"],
+      "caption_rule": "Never sell sexual content in the caption. Bio link only. Meta removes the caption, keeps the link."
+    },
+    "premium": {
+      "platform": "fanvue",
+      "rating": "glamour",
+      "allowed": ["lingerie", "boudoir", "implied nude with coverage", "wet shirt", "bikini sets"],
+      "never": ["explicit sexual acts", "genitalia", "any under-18 cue whatsoever", "real person's face"],
+      "price_band_inr": [299, 1499],
+      "post_frequency_per_day": 2
+    }
+  },
+
+  "content_pillars": [
+    { "name": "glam_looks", "share": 0.3, "example": "ek black dress, teen jagah" },
+    { "name": "city_nights", "share": 0.2, "example": "Bandra late night sach" },
+    { "name": "gym_glow", "share": 0.2, "example": "gym ke baad ka realistic glow" },
+    { "name": "relatable_tea", "share": 0.2, "example": "dating apps ka sach" },
+    { "name": "behind_the_scenes", "share": 0.1, "example": "shoot day, BTS" }
+  ],
+
+  "posting": {
+    "timezone": "Asia/Kolkata",
+    "public_slots": ["12:30", "20:30"],
+    "premium_slots": ["09:00", "22:00"],
+    "per_week_public": 12,
+    "always_disclose_ai": true,
+    "ai_label_text": "AI-generated character"
+  },
+
+  "video_spec": {
+    "aspect": "9:16",
+    "resolution": "1080x1920",
+    "fps": 30,
+    "target_duration_sec": 12,
+    "caption_style": "bold white, black outline, lower third"
+  }
+}

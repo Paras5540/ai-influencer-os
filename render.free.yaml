@@ -1,0 +1,29 @@
+# Render FREE plan — 0 card, git push = live URL. Demo/quick start ke liye.
+#
+# ⚠️ Free plan me PERSISTENT DISK nahi hoti: restart/redeploy pe data/app.db aur reels
+#    ud jate hain. 15 min idle pe service bhi so jati hai (catch-up scheduler usse
+#    recover karta hai, par 512 MB RAM me sirf 720p chalega).
+#    Roz 3 reels ka permanent setup chahiye to Oracle Always Free use karo:
+#    docs/FREE_SETUP.md
+services:
+  - type: web
+    name: ai-influencer-os
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: TZ
+        value: Asia/Kolkata
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: LOW_MEM
+        value: "1"          # 720x1280 + ultrafast (512 MB RAM)
+      - key: FFMPEG_PRESET
+        value: ultrafast
+      - key: FFMPEG_CRF
+        value: "26"
+      - key: CATCHUP_HOURS
+        value: "6"          # sleep ke baad missed reel bana de

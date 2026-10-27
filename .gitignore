@@ -1,0 +1,12 @@
+# runtime data (never commit)
+data/
+out/
+content/
+state/
+backup/
+logs/*.log
+.env
+__pycache__/
+*.pyc
+*.tmp
+assets/music/*.mp3

@@ -1,0 +1,35 @@
+{
+  "character_id": "ira_v1",
+  "note": "Pre-built starter face (master.png). This is the identity anchor — every image must be an edit of this file.",
+  "identity_lock": {
+    "do_not_change": [
+      "face shape (round-soft jawline)",
+      "naturally full dark eyebrows, straight with slight arch",
+      "large dark-brown almond eyes, slight upturn at outer corner",
+      "straight nose with a tiny bump on the bridge",
+      "full lips, naturally rosy, no filler look",
+      "small beauty spot on the LEFT cheekbone (2 cm below the eye)",
+      "mole-free right cheek",
+      "hair: long dark-brown wavy, off-centre parting, falls over RIGHT shoulder most of the time",
+      "small gold hoop earrings + thin gold chain (always worn)",
+      "skin: medium-brown warm undertone, visible pores, a few faint marks — never airbrushed"
+    ],
+    "age": 24,
+    "height_cm": 162,
+    "body": "slim-athletic, average Indian proportions, no exaggerated features",
+    "wardrobe_palette": [
+      "oversized cotton shirts in cream/white/olive",
+      "kurti with jeans (Indo-western)",
+      "simple bodycon dress for evening content",
+      "gym: plain tee + leggings",
+      "colours: cream, olive, rust, black, pastel pink — never neon"
+    ],
+    "signature_details": [
+      "always a thin gold chain",
+      "small gold hoops",
+      "one thin silver ring on right hand",
+      "nails short, neutral pink",
+      "no heavy makeup — kohl + tinted lip balm only"
+    ]
+  }
+}

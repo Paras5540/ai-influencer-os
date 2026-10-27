@@ -1,0 +1,43 @@
+{
+  "_note": "Provider endpoint IDs change over time. If a call fails with 'model not found', open fal.ai/models, pick the current equivalent, paste its ID here. No code change needed.",
+  "image": {
+    "provider": "gemini",
+    "model": "gemini-2.5-flash-image",
+    "fallback_model": "gemini-2.5-flash-image-preview",
+    "free_fallback": "pollinations"
+  },
+  "text": {
+    "provider": "gemini",
+    "model": "gemini-2.5-flash",
+    "openai_compatible": {
+      "_note": "Set provider to 'openai' to use Groq / OpenRouter / any 100M-token free gateway. Needs OPENAI_BASE_URL + OPENAI_API_KEY in .env",
+      "base_url_env": "OPENAI_BASE_URL",
+      "model_env": "OPENAI_MODEL"
+    }
+  },
+  "tts": {
+    "provider": "edge",
+    "_free": "edge = Microsoft neural TTS, unlimited, no key. hi-IN-SwaraNeural (female) / hi-IN-AnanyaNeural",
+    "model": "eleven_multilingual_v2"
+  },
+  "video": {
+    "provider": "fal",
+    "talking_head_endpoint": "fal-ai/kling-video/v1.6/standard/avatar",
+    "talking_head_alt_endpoint": "fal-ai/sync-lipsync/v2",
+    "broll_endpoint": "fal-ai/kling-video/v2/master/image-to-video",
+    "free_daily_endpoint": "alibaba/wan-3.0/text-to-video",
+    "_free_daily": "fal sandbox: 5 free Wan 3 generations per 24h (browser only, no API)",
+    "resolution": "720p"
+  },
+  "publish": {
+    "instagram_graph_version": "v21.0",
+    "youtube_privacy": "public"
+  },
+  "fanvue": {
+    "base_url": "https://api.fanvue.com",
+    "api_version": "2025-06-26",
+    "token_url": "https://auth.fanvue.com/oauth2/token",
+    "default_price_cents": 699,
+    "audience": "subscribers"
+  }
+}

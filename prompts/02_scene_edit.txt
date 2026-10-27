@@ -1,0 +1,36 @@
+# 02 — SCENE EDIT TEMPLATE (used for every single post)
+
+Always send `assets/character/master.png` as the reference image.
+Never describe the face in the prompt — instead say "same woman as the reference image, same face, do not change her face".
+
+---
+
+## Template
+
+Using the reference image as the exact identity of the woman, keep her face, facial features, skin tone,
+hairline and the beauty spot on her left cheekbone 100% unchanged. Change only the following:
+
+- SCENE: {scene}
+- OUTFIT: {outfit}
+- EXPRESSION: {expression}
+- CAMERA: {camera}
+- LIGHT: {light}
+- MOOD / GRADE: {grade}
+
+Photorealistic, phone-camera realism, visible skin texture, natural imperfect hair strands,
+no beauty retouching, no airbrushing, no plastic skin, vertical 9:16 framing with headroom for
+on-screen captions at the bottom third. No text, no watermark, no logo.
+
+---
+
+## Good vs bad examples
+
+BAD:  "a beautiful Indian girl in a cafe"        -> new face every time
+GOOD: "same woman as reference, now standing in a Bandra cafe queue, holding an iced coffee"
+
+BAD:  "smiling"                                   -> changes jawline and eye shape
+GOOD: "same slight closed-mouth smile as reference, chin slightly lowered"
+
+## Rule of thumb
+Every word you add about the FACE increases the chance of drift. Describe only clothes, place,
+light, pose and camera. The reference image carries the identity.

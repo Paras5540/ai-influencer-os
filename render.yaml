@@ -1,0 +1,20 @@
+# Render blueprint — repo push karke ek click me live URL.
+# Dashboard -> New -> Blueprint -> repo select. Password Render khud generate kar dega.
+services:
+  - type: web
+    name: ai-influencer-os
+    runtime: docker
+    plan: starter            # free plan 15 min idle pe sleep karta hai -> schedule miss
+    region: singapore        # India ke sabse paas
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: TZ
+        value: Asia/Kolkata
+      - key: ADMIN_PASSWORD
+        generateValue: true  # strong random password
+    disk:
+      name: influencer-data
+      mountPath: /app/data   # DB + reels persist
+      sizeGB: 1

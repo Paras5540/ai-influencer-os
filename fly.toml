@@ -1,0 +1,29 @@
+# Fly.io — Mumbai (bom) me chhota always-on box. Public HTTPS URL free subdomain pe milta hai.
+#   fly launch --no-deploy --copy-config
+#   fly volumes create influencer_data --size 1 --region bom
+#   fly secrets set ADMIN_PASSWORD=$(openssl rand -base64 24)
+#   fly deploy
+app = "ai-influencer-os"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  TZ = "Asia/Kolkata"
+  APP_DATA_DIR = "/app/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false      # schedule ke liye on rehna zaroori
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[mounts]]
+  source = "influencer_data"
+  destination = "/app/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"

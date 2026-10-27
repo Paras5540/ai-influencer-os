@@ -1,0 +1,24 @@
+# 01 — MASTER FACE PROMPT (run exactly once, then never again)
+
+This text is the *only* thing that should ever create the face from scratch.
+After `assets/character/master.png` exists, every other image is an EDIT of that file.
+That is the whole secret of face consistency: **one master image, infinite edits — never regenerate from text.**
+
+---
+
+## Prompt
+
+Photorealistic candid photograph of a 24-year-old Indian woman, the face of a digital creator.
+Medium-brown warm skin with real visible pore texture, a few faint acne marks, and a small beauty spot on the LEFT cheekbone about 2 cm below the eye. Round-ish face with a soft jawline, naturally full dark eyebrows (straight, slight arch), large dark-brown almond eyes with visible iris detail and tiny catchlights, straight nose with a tiny bump on the bridge, full lips with a natural rosy tint, one slightly crooked lower front tooth visible in a small closed-mouth smile. Long dark-brown wavy hair, off-centre parting, falling over the RIGHT shoulder, a few flyaway strands. Small gold hoop earrings and a thin gold chain. Oversized cream cotton shirt, sleeves rolled up. Sitting at a cafe table near a window in Bandra, Mumbai. Warm late-afternoon window light from camera left, soft shadow falloff on the right of the face, blurred background with a glass of chai and a laptop. Shot on a phone front camera at arm's length, slightly above eye level, natural 26 mm perspective, subtle sensor noise. No studio lighting, no beauty retouching, no airbrushing, candid unposed expression, looking directly into the lens. Vertical 3:4 framing, head and shoulders plus some table in the lower third. No text, no watermark, no logo.
+
+---
+
+## Output
+Save as `assets/character/master.png` (1024x1536 or larger). This single file is the character's
+identity for the rest of the channel's life. Back it up in three places.
+
+## Sanity check before you accept it
+- [ ] Zoom to 200% on the eyes — iris texture must be irregular, not identical twin dots.
+- [ ] Skin must show pores; if it looks plastic, add "visible skin texture, no smoothing" and re-run.
+- [ ] Beauty spot present on the LEFT cheekbone.
+- [ ] Ask yourself: would I scroll past this on Instagram? If yes, re-run.

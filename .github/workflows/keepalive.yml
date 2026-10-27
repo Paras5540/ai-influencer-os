@@ -1,0 +1,22 @@
+# Render free 15 min idle pe so jata hai. Ye workflow har 10 min ping karta hai
+# taaki scheduler zinda rahe. Repo secret: APP_URL (e.g. https://ai-influencer-os.onrender.com)
+name: keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping dashboard
+        run: |
+          if [ -z "${{ secrets.APP_URL }}" ]; then echo "APP_URL secret not set"; exit 0; fi
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${{ secrets.APP_URL }}/health" || echo 000)
+            echo "ping $i -> $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done

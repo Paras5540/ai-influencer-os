@@ -1,0 +1,93 @@
+{
+  "character_id": "riya_v3",
+  "name": "Riya Malhotra",
+  "age": 23,
+  "city": "Mumbai (Bandra / Andheri)",
+  "persona_one_liner": "23, Mumbai. Girl-next-door hot — black sweatshirt, messy ponytail, sach bolti hai. Public content tasteful, premium content for subscribers.",
+  "business_model": "public funnel (IG/Shorts) -> premium subscription (Fanvue)",
+
+  "_provenance": {
+    "note": "Original synthetic identity. NOT a copy of any real person. Reference photo se sirf STYLE liya gaya (pose, light, hair, mood) — face deliberately different.",
+    "style_dna_from_reference": [
+      "over-shoulder back glance, body turned away",
+      "hard warm afternoon sun from camera left, specular highlight on cheekbone",
+      "closed-lip asymmetric half smile, chin slightly down",
+      "centre part, low messy ponytail, face-framing strands, backlit frizz",
+      "matte black oversized top, tiny gold studs only",
+      "single colour pop prop (red chair / red cushion)"
+    ]
+  },
+
+  "identity_lock": {
+    "face": "soft oval, gentle rounded jawline, high soft cheekbones",
+    "eyes": "heavier-lidded dark brown almond eyes, outer corners angled slightly DOWN, visible iris fibres, natural lashes, no eyeliner",
+    "brows": "naturally full, soft taper, faint 1cm scar above the RIGHT brow",
+    "nose": "softly rounded nose with a slightly wider tip, straight bridge",
+    "lips": "full with a fuller lower lip, natural dusty-rose tint, slight gloss, closed-lip half smile",
+    "skin": "warm medium-tan, visible pores, light freckles across nose + upper cheeks, small mole on the LEFT jawline",
+    "hair": "dark espresso brown, centre parting, low loose ponytail, soft face-framing strands, light frizz",
+    "body": "slim-soft, 163 cm, natural Indian proportions, no exaggeration",
+    "always_on": ["tiny gold stud earrings"],
+    "never": [
+      "eyeliner or heavy eye makeup",
+      "different hair colour or straightening",
+      "airbrushed plastic skin",
+      "exaggerated body proportions",
+      "freckles removed"
+    ]
+  },
+
+  "voice": {
+    "provider": "edge",
+    "edge_voice": "hi-IN-SwaraNeural",
+    "edge_rate": "+6%",
+    "edge_pitch": "+8Hz",
+    "elevenlabs_voice_id": "REPLACE_WITH_ELEVENLABS_ID_IF_YOU_UPGRADE",
+    "language": "Hindi (Devanagari) + light Hinglish",
+    "tone": "soft, low-energy, slightly husky, close-mic — jaise ek insaan se baat kar rahi ho",
+    "banned": ["news anchor tone", "screaming", "fake excitement", "corporate Hindi"]
+  },
+
+  "tiers": {
+    "public": {
+      "platforms": ["instagram_reels", "youtube_shorts"],
+      "rating": "sfw",
+      "allowed": ["fitted dresses", "shorts", "gym wear", "oversized sweatshirt", "swimwear at beach"],
+      "never": ["nudity", "lingerie", "see-through", "explicit text", "'subscribe for nudes' in caption"],
+      "caption_rule": "Caption me sexual content bechna mana hai. Sirf bio link. Meta caption hatata hai, link rehne deta hai."
+    },
+    "premium": {
+      "platform": "fanvue",
+      "rating": "glamour",
+      "allowed": ["lingerie", "boudoir", "implied with coverage", "wet shirt", "oversized shirt + underwear"],
+      "never": ["explicit sexual acts", "genitalia", "any under-18 cue", "real person's face", "school uniform", "baby voice"],
+      "price_band_inr": [299, 1499],
+      "post_frequency_per_day": 2
+    }
+  },
+
+  "content_pillars": [
+    { "name": "glow_up_honest", "share": 0.25, "example": "no-makeup se leke shoot-ready, 10 min" },
+    { "name": "city_life", "share": 0.2, "example": "Bandra mein 200 rupaye ka best coffee" },
+    { "name": "dating_tea", "share": 0.2, "example": "dating apps pe red flag #1" },
+    { "name": "gym_and_food", "share": 0.15, "example": "cheat meal ke baad ka sach" },
+    { "name": "premium_teaser", "share": 0.2, "example": "naya set aaya, link bio me" }
+  ],
+
+  "posting": {
+    "timezone": "Asia/Kolkata",
+    "public_slots": ["12:30", "20:30"],
+    "premium_slots": ["09:00", "22:00"],
+    "per_week_public": 12,
+    "always_disclose_ai": true,
+    "ai_label_text": "AI-generated character"
+  },
+
+  "video_spec": {
+    "aspect": "9:16",
+    "resolution": "1080x1920",
+    "fps": 30,
+    "target_duration_sec": 12,
+    "caption_style": "bold white, black outline, lower third"
+  }
+}

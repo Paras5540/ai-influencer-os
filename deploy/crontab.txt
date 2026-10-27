@@ -1,0 +1,18 @@
+# Everything runs from cron. Nothing needs a laptop to be open. Times are IST.
+
+# 1) Build today's PUBLIC reels (script -> face-locked image -> free voice -> video -> captions)
+0 6 * * *  cd /opt/ai-influencer-os && /usr/bin/python3 src/02_generate_batch.py --count 2 >> logs/build.log 2>&1
+
+# 2) PUBLIC tier: Instagram Reels + YouTube Shorts
+30 12 * * * cd /opt/ai-influencer-os && /usr/bin/python3 src/05_publish.py --limit 1 >> logs/publish.log 2>&1
+30 20 * * * cd /opt/ai-influencer-os && /usr/bin/python3 src/05_publish.py --limit 1 >> logs/publish.log 2>&1
+
+# 3) PREMIUM tier: Fanvue paid posts (price in cents: 699 = $6.99)
+0 9  * * * cd /opt/ai-influencer-os && /usr/bin/python3 src/06_fanvue.py --queue --price 699 >> logs/fanvue.log 2>&1
+0 22 * * * cd /opt/ai-influencer-os && /usr/bin/python3 src/06_fanvue.py --queue --price 699 >> logs/fanvue.log 2>&1
+
+# 4) Weekly PPV drop / win-back mass DM (Sunday morning)
+0 11 * * 0 cd /opt/ai-influencer-os && /usr/bin/python3 src/06_fanvue.py --mass --text "naya set aa gaya 🖤 subscribers ke liye pehle" >> logs/fanvue.log 2>&1
+
+# 5) Health check once a day (logs only)
+0 23 * * * cd /opt/ai-influencer-os && /usr/bin/python3 src/00_preflight.py >> logs/health.log 2>&1

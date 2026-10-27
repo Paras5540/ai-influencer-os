@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Influencer OS</title>
+<style>
+  :root{
+    --bg:#0a0b10; --panel:#12141c; --panel2:#171a24; --line:#242836;
+    --txt:#eef0f7; --mut:#8c92a6; --acc:#ff4d8d; --acc2:#8b5cf6;
+    --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  a{color:var(--acc)}
+  .hide{display:none!important}
+  #login{min-height:100vh;display:grid;place-items:center;padding:24px;
+         background:radial-gradient(60% 60% at 50% 0%,#1b1330 0%,#0a0b10 70%)}
+  .loginbox{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);
+            border-radius:20px;padding:32px}
+  .loginbox h1{font-size:22px;margin:0 0 6px}
+  .loginbox p{color:var(--mut);font-size:13px;margin:0 0 20px}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);
+        color:var(--txt);border-radius:10px;padding:11px 13px;font-size:14px;outline:none;
+        font-family:inherit}
+  input:focus,textarea:focus,select:focus{border-color:var(--acc2)}
+  button{cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;border:none;
+         border-radius:10px;padding:11px 16px}
+  .primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+  .ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+  .sm{padding:7px 11px;font-size:12px;border-radius:8px}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;
+         padding:14px 22px;background:rgba(10,11,16,.85);backdrop-filter:blur(12px);
+         border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.2px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  nav{display:flex;gap:4px;margin-left:18px;flex-wrap:wrap}
+  nav button{background:transparent;color:var(--mut);padding:8px 13px;border-radius:9px;font-weight:500}
+  nav button.on{background:var(--panel2);color:var(--txt)}
+  .spacer{flex:1}
+  main{max-width:1180px;margin:0 auto;padding:24px 20px 90px}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .card h3{margin:0 0 4px;font-size:12px;color:var(--mut);font-weight:600;text-transform:uppercase;
+           letter-spacing:.06em}
+  .big{font-size:30px;font-weight:800;letter-spacing:-1px}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  h2{font-size:18px;margin:26px 0 12px}
+  .muted{color:var(--mut);font-size:13px}
+  .pill{font-size:11px;padding:4px 9px;border-radius:99px;background:var(--panel2);
+        border:1px solid var(--line);color:var(--mut);white-space:nowrap}
+  .pill.ok{color:var(--ok);border-color:#1d4d3b;background:#0f2019}
+  .pill.err{color:var(--err);border-color:#4d1d1d;background:#200f0f}
+  .pill.warn{color:var(--warn);border-color:#4d3f1d;background:#201a0f}
+  .job{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .job:last-child{border:0}
+  .bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;flex:1;min-width:90px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));
+         width:0;transition:width .4s}
+  .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .post{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+        display:flex;flex-direction:column}
+  .post video{width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+  .post .body{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .post .hook{font-weight:700;font-size:14px}
+  .post textarea{font-size:12px;min-height:64px;resize:vertical}
+  .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+  table{width:100%;border-collapse:collapse}
+  td,th{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:14px}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  code{background:var(--panel2);padding:2px 6px;border-radius:5px;font-size:12px}
+  .log{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+       background:#07080c;border:1px solid var(--line);border-radius:12px;padding:14px;
+       height:440px;overflow:auto;white-space:pre-wrap;line-height:1.55}
+  .log .l-info{color:#9fb3c8}.log .l-warn{color:var(--warn)}.log .l-error{color:var(--err)}
+  .charwrap{display:grid;grid-template-columns:280px 1fr;gap:20px}
+  @media(max-width:760px){.charwrap{grid-template-columns:1fr}}
+  .charwrap img{width:100%;border-radius:16px;border:1px solid var(--line)}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:13px}
+  .kv div:nth-child(odd){color:var(--mut)}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--panel2);
+         border:1px solid var(--line);padding:12px 18px;border-radius:12px;font-size:13px;z-index:99;
+         box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .toast.err{border-color:#5a1d1d;color:#ffb4b4}
+  .toast.ok{border-color:#1d4d3b;color:#9ff0cf}
+
+  /* integrations */
+  .igroup{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;
+          margin-bottom:14px}
+  .igroup h4{margin:0 0 2px;font-size:15px}
+  .igroup .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+  .ifield{display:grid;grid-template-columns:1fr 300px 96px;gap:10px;align-items:center;
+          padding:9px 0;border-top:1px solid var(--line)}
+  .ifield:first-of-type{border-top:0}
+  @media(max-width:780px){.ifield{grid-template-columns:1fr}}
+  .ifield .lab{font-size:13px;font-weight:600}
+  .ifield .hnt{color:var(--mut);font-size:11px;margin-top:2px}
+  .ifield input,.ifield select{font-size:13px;padding:9px 11px}
+  .ifield .stat{display:flex;justify-content:flex-end}
+  .sticky-save{position:sticky;bottom:14px;background:rgba(10,11,16,.9);backdrop-filter:blur(8px);
+               border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:16px;
+               display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .cmd{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#07080c;
+       border:1px solid var(--line);border-radius:12px;padding:14px;white-space:pre-wrap;
+       overflow:auto;color:#c8d3e0}
+  .check{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);
+         font-size:13px}
+  .check:last-child{border:0}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="loginbox">
+    <h1>AI Influencer OS</h1>
+    <p>Dashboard login. Password server ke <code>ADMIN_PASSWORD</code> me hai.</p>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password"/>
+    <div style="height:12px"></div>
+    <button class="primary" style="width:100%" onclick="doLogin()">Enter dashboard</button>
+    <p style="margin-top:14px;font-size:12px">Pehli baar? Server pe <code>ADMIN_PASSWORD</code> set karo.</p>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <header>
+    <div class="brand"><span class="dot"></span> AI Influencer OS</div>
+    <nav>
+      <button data-tab="dash" class="on">Dashboard</button>
+      <button data-tab="posts">Reels</button>
+      <button data-tab="char">Character</button>
+      <button data-tab="keys">APIs</button>
+      <button data-tab="sched">Schedule</button>
+      <button data-tab="deploy">Deploy</button>
+      <button data-tab="logs">Logs</button>
+    </nav>
+    <div class="spacer"></div>
+    <button class="ghost sm" onclick="logout()">Logout</button>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="tab-dash">
+      <div class="grid cards">
+        <div class="card"><h3>Reels ready</h3><div class="big" id="s-ready">0</div></div>
+        <div class="card"><h3>Published</h3><div class="big" id="s-pub">0</div></div>
+        <div class="card"><h3>Jobs running</h3><div class="big" id="s-run">0</div></div>
+        <div class="card"><h3>Failed</h3><div class="big" id="s-fail">0</div></div>
+      </div>
+
+      <h2>Automation</h2>
+      <div class="card">
+        <div class="row">
+          <select id="count" style="max-width:160px">
+            <option value="1">1 reel</option>
+            <option value="2" selected>2 reels</option>
+            <option value="3">3 reels</option>
+          </select>
+          <button class="primary" onclick="doBuild()">Generate now</button>
+          <span class="muted">Bina key ke bhi chalta hai — master face + free Hindi voice + captions.</span>
+        </div>
+      </div>
+
+      <h2>Jobs</h2>
+      <div class="card" id="jobs"><div class="muted">No jobs yet.</div></div>
+    </section>
+
+    <!-- POSTS -->
+    <section id="tab-posts" class="hide">
+      <div class="row" style="margin-bottom:14px">
+        <button class="ghost sm" onclick="loadPosts()">Refresh</button>
+        <span class="muted">Har reel yahin aayegi. Caption edit karo, phir platform pe publish.</span>
+      </div>
+      <div class="posts" id="postlist"></div>
+    </section>
+
+    <!-- CHARACTER -->
+    <section id="tab-char" class="hide">
+      <h2>Character — locked</h2>
+      <div class="charwrap">
+        <div>
+          <img id="charmaster" src="" alt="master"/>
+          <div style="height:10px"></div>
+          <input id="charfile" type="file" accept="image/*"/>
+          <div style="height:8px"></div>
+          <button class="ghost sm" onclick="uploadChar()">Replace master</button>
+          <p class="muted" style="font-size:12px">Replace karne se purani file ka backup ban jata hai.
+             Har image isi master ka edit hoga.</p>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:10px">
+            <div><div class="big" style="font-size:22px" id="charname">—</div>
+                 <div class="muted" id="charid"></div></div>
+            <span class="pill" id="charcfg"></span>
+          </div>
+          <div class="kv" id="charkv"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APIS -->
+    <section id="tab-keys" class="hide">
+      <h2>APIs &amp; accounts</h2>
+      <p class="muted" style="margin:-6px 0 16px">Sab kuch yahan se add hota hai. “Get key ↗” pe click karke
+        key banao, paste karo, Save dabao. Test se pata chalega kaam kar rahi hai ya nahi.</p>
+      <div id="intgroups"><div class="muted">Loading…</div></div>
+      <div class="sticky-save">
+        <button class="primary" onclick="saveIntegrations()">Save all changes</button>
+        <button class="ghost" onclick="testIntegrations()">Test connections</button>
+        <a class="ghost sm" style="text-decoration:none;padding:9px 12px;border-radius:9px"
+           href="/api/export-env">Download .env</a>
+        <span class="muted" id="savestate"></span>
+      </div>
+      <div id="testout" style="margin-top:16px"></div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section id="tab-sched" class="hide">
+      <h2>Schedule (IST)</h2>
+      <div class="card">
+        <table id="schedtable">
+          <thead><tr><th>Task</th><th>Time</th><th>On</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div style="height:14px"></div>
+        <button class="primary sm" onclick="saveSched()">Save schedule</button>
+        <p class="muted" style="font-size:12px">build = naye reels banao • ig / youtube / fanvue = queue se ek post publish.
+           Host sota ho to catch-up chalega (CATCHUP_HOURS).</p>
+      </div>
+    </section>
+
+    <!-- DEPLOY -->
+    <section id="tab-deploy" class="hide">
+      <h2>Deploy &amp; system</h2>
+      <div class="grid cards">
+        <div class="card"><h3>Timezone</h3><div class="big" style="font-size:20px" id="d-tz">—</div></div>
+        <div class="card"><h3>Builds / day</h3><div class="big" id="d-builds">0</div></div>
+        <div class="card"><h3>Data</h3><div class="big" style="font-size:20px" id="d-data">—</div></div>
+        <div class="card"><h3>Render</h3><div class="big" style="font-size:20px" id="d-res">—</div></div>
+      </div>
+
+      <h2>Live checks</h2>
+      <div class="card" id="d-checks"></div>
+
+      <h2>One-command deploy (naya server)</h2>
+      <div class="card">
+        <div class="cmd" id="d-cmd">loading…</div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="ghost sm" onclick="copyCmd()">Copy command</button>
+          <a class="ghost sm" style="text-decoration:none;padding:9px 12px;border-radius:9px"
+             href="/api/export-env">Download .env</a>
+          <span class="muted">.env me aapki saari keys hain — server pe upload karke compose chalao.</span>
+        </div>
+      </div>
+
+      <h2>Docker</h2>
+      <div class="card">
+        <div class="cmd">docker compose up -d --build
+# ya bina compose:
+bash deploy/deploy.sh --tunnel</div>
+        <p class="muted" style="font-size:12px">Data <code>./data</code> me rehta hai (volume).
+           Password <code>data/.admin_password</code> me.</p>
+      </div>
+    </section>
+
+    <!-- LOGS -->
+    <section id="tab-logs" class="hide">
+      <h2>Live logs</h2>
+      <div class="log" id="logbox"></div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast hide"></div>
+
+<script>
+let TAB='dash', LOG_AFTER=0, SYS={}, DIRTY=false;
+
+function toast(msg, kind='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+kind; t.classList.remove('hide');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.add('hide'),3200);
+}
+async function api(path, opts={}){
+  const r=await fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...opts});
+  if(r.status===401){ document.getElementById('login').classList.remove('hide');
+    document.getElementById('app').classList.add('hide'); throw new Error('login'); }
+  if(!r.ok){ let m='error'; try{ m=(await r.json()).detail||m }catch(e){} throw new Error(m); }
+  return r.headers.get('content-type')?.includes('json') ? r.json() : r.text();
+}
+
+async function boot(){
+  const m=await fetch('/api/me',{credentials:'same-origin'}).then(r=>r.json());
+  if(m.authed){ document.getElementById('login').classList.add('hide');
+    document.getElementById('app').classList.remove('hide'); initApp(); }
+}
+async function doLogin(){
+  const pw=document.getElementById('pw').value;
+  try{
+    const r=await fetch('/api/login',{method:'POST',credentials:'same-origin',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    if(!r.ok) throw new Error('wrong password');
+    document.getElementById('login').classList.add('hide');
+    document.getElementById('app').classList.remove('hide');
+    initApp();
+  }catch(e){ toast('Password galat hai','err'); }
+}
+async function logout(){ await fetch('/api/logout',{method:'POST',credentials:'same-origin'}); location.reload(); }
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  TAB=b.dataset.tab;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  ['dash','posts','char','keys','sched','deploy','logs'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hide',t!==TAB);
+  });
+  if(TAB==='posts') loadPosts();
+  if(TAB==='char') loadChar();
+  if(TAB==='keys') loadIntegrations();
+  if(TAB==='sched') loadSched();
+  if(TAB==='deploy') loadDeploy();
+});
+
+/* ---------- dashboard ---------- */
+async function loadStats(){
+  try{
+    const s=await api('/api/stats');
+    document.getElementById('s-ready').textContent=s.reels_ready;
+    document.getElementById('s-pub').textContent=s.published;
+    document.getElementById('s-run').textContent=s.jobs_running;
+    document.getElementById('s-fail').textContent=s.jobs_failed;
+  }catch(e){}
+}
+async function loadJobs(){
+  try{
+    const js=await api('/api/jobs');
+    const el=document.getElementById('jobs');
+    if(!js.length){ el.innerHTML='<div class="muted">No jobs yet.</div>'; return; }
+    el.innerHTML=js.slice(0,12).map(j=>{
+      const cls=j.status==='done'?'ok':j.status==='failed'?'err':j.status==='running'?'warn':'';
+      return `<div class="job">
+        <span class="pill ${cls}">${j.status}</span>
+        <div style="min-width:70px" class="muted">#${j.id} ${j.kind}</div>
+        <div class="bar"><i style="width:${j.progress||0}%"></i></div>
+        <div class="muted" style="min-width:180px;text-align:right">${(j.message||'').slice(0,60)}</div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+async function doBuild(){
+  const count=+document.getElementById('count').value;
+  try{ await api('/api/build',{method:'POST',body:JSON.stringify({count})});
+    toast('Build queued — 1-3 min','ok'); loadJobs(); loadStats();
+  }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- posts ---------- */
+async function loadPosts(){
+  try{
+    const ps=await api('/api/posts');
+    const el=document.getElementById('postlist');
+    if(!ps.length){ el.innerHTML='<div class="muted">Abhi koi reel nahi. Dashboard se “Generate now” dabao.</div>'; return; }
+    el.innerHTML=ps.map(p=>`
+      <div class="post">
+        <video src="/media/${p.video}" poster="/media/${p.thumb||''}" controls preload="metadata"></video>
+        <div class="body">
+          <div class="hook">${p.hook||p.title}</div>
+          <span class="pill ${p.status==='published'?'ok':''}">${p.status}</span>
+          <textarea id="cap-${p.id}">${(p.caption||'').replace(/</g,'&lt;')}</textarea>
+          <div class="btns">
+            <button class="ghost sm" onclick="saveCap(${p.id})">Save</button>
+            <button class="primary sm" onclick="pub(${p.id},'instagram')">IG</button>
+            <button class="ghost sm" onclick="pub(${p.id},'youtube')">Shorts</button>
+            <button class="ghost sm" onclick="pub(${p.id},'fanvue')">Fanvue</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+async function saveCap(id){
+  const caption=document.getElementById('cap-'+id).value;
+  try{ await api('/api/posts/'+id,{method:'POST',body:JSON.stringify({caption})}); toast('Caption saved','ok'); }
+  catch(e){ toast(e.message,'err'); }
+}
+async function pub(id,platform){
+  try{ await api('/api/publish',{method:'POST',body:JSON.stringify({post_id:id,platform})});
+    toast(platform+' publish queued','ok'); loadJobs(); }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- character ---------- */
+async function loadChar(){
+  try{
+    const c=await api('/api/character');
+    document.getElementById('charmaster').src=c.master_url+'?t='+Date.now();
+    document.getElementById('charname').textContent=c.name||'—';
+    document.getElementById('charid').textContent=c.id||'';
+    document.getElementById('charcfg').textContent=c.config_file;
+    document.getElementById('charkv').innerHTML=
+      Object.entries(c.identity||{}).map(([k,v])=>
+        `<div>${k}</div><div>${Array.isArray(v)?v.join(', '):v}</div>`).join('');
+  }catch(e){}
+}
+async function uploadChar(){
+  const f=document.getElementById('charfile').files[0];
+  if(!f) return toast('Pehle image chuno','err');
+  const fd=new FormData(); fd.append('file',f);
+  try{
+    const r=await fetch('/api/character/upload',{method:'POST',credentials:'same-origin',body:fd});
+    if(!r.ok) throw new Error('upload failed');
+    toast('Master replaced','ok'); loadChar();
+  }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- integrations ---------- */
+async function loadIntegrations(){
+  try{
+    const d=await api('/api/integrations');
+    const el=document.getElementById('intgroups');
+    el.innerHTML=d.groups.map(g=>`
+      <div class="igroup">
+        <h4>${g.title}</h4>
+        <div class="sub">${g.subtitle||''}</div>
+        ${g.fields.map(f=>{
+          const st = f.set ? '<span class="pill ok">set</span>'
+                           : (f.required ? '<span class="pill warn">required</span>'
+                                         : '<span class="pill">optional</span>');
+          let ctrl;
+          if(f.choices){
+            ctrl = `<select data-k="${f.key}">` + f.choices.map(c=>
+              `<option value="${c}" ${((f.value||f.default)===c)?'selected':''}>${c}</option>`).join('') + `</select>`;
+          } else {
+            ctrl = `<input data-k="${f.key}" type="${f.secret?'password':'text'}"
+                      value="${f.value||''}"
+                      placeholder="${f.set ? (f.masked||'set') : (f.default||'not set')}" />`;
+          }
+          return `<div class="ifield">
+            <div>
+              <div class="lab">${f.label} ${f.url?`<a href="${f.url}" target="_blank" rel="noopener" style="font-size:11px">Get key ↗</a>`:''}</div>
+              <div class="hnt">${f.hint||''}</div>
+            </div>
+            <div>${ctrl}</div>
+            <div class="stat">${st}</div>
+          </div>`;
+        }).join('')}
+      </div>`).join('');
+    el.addEventListener('input',()=>{ DIRTY=true;
+      document.getElementById('savestate').textContent='unsaved changes'; });
+  }catch(e){ document.getElementById('intgroups').innerHTML='<div class="muted">Load fail: '+e.message+'</div>'; }
+}
+async function saveIntegrations(){
+  const payload={};
+  document.querySelectorAll('#intgroups [data-k]').forEach(i=>{
+    const v=(i.value||'').trim();
+    if(v) payload[i.dataset.k]=v;
+  });
+  try{
+    const r=await api('/api/integrations',{method:'POST',body:JSON.stringify(payload)});
+    DIRTY=false;
+    document.getElementById('savestate').textContent=(r.changed||[]).length+' saved';
+    toast((r.changed||[]).length+' setting(s) saved','ok'); loadIntegrations();
+  }catch(e){ toast(e.message,'err'); }
+}
+async function testIntegrations(){
+  toast('Testing…','ok');
+  try{
+    const res=await api('/api/integrations/test',{method:'POST',body:'{}'});
+    document.getElementById('testout').innerHTML=
+      '<div class="card"><h3>Connection test</h3>' + res.map(r=>
+        `<div class="check"><span class="pill ${r.ok?'ok':'err'}">${r.ok?'OK':'FAIL'}</span>
+         <b style="font-size:13px">${r.name}</b><span class="muted">${r.detail||''}</span></div>`).join('') +
+      '</div>';
+  }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- schedule ---------- */
+async function loadSched(){
+  try{
+    const rows=await api('/api/schedule');
+    const tb=document.querySelector('#schedtable tbody');
+    tb.innerHTML=rows.map(s=>`<tr>
+      <td><span class="pill">${s.task}</span></td>
+      <td><input type="time" value="${s.at}" data-id="${s.id}" style="max-width:130px"/></td>
+      <td><input type="checkbox" ${s.enabled?'checked':''} data-en="${s.id}" style="width:18px;height:18px"/></td>
+    </tr>`).join('');
+  }catch(e){}
+}
+async function saveSched(){
+  const rows=[...document.querySelectorAll('#schedtable tbody tr')].map(tr=>{
+    const t=tr.querySelector('input[type=time]'), e=tr.querySelector('input[type=checkbox]');
+    return {id:+t.dataset.id, at:t.value, enabled:e.checked};
+  });
+  try{ await api('/api/schedule',{method:'POST',body:JSON.stringify({rows})});
+    toast('Schedule saved','ok'); }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- deploy ---------- */
+async function loadDeploy(){
+  try{
+    SYS=await api('/api/system');
+    document.getElementById('d-tz').textContent=SYS.timezone||'—';
+    document.getElementById('d-builds').textContent=SYS.builds_per_day||0;
+    document.getElementById('d-data').textContent=(SYS.data_mb||0)+' MB';
+    document.getElementById('d-res').textContent=(SYS.low_mem==='1')?'720p (low mem)':'1080p';
+    const st=await api('/api/stats');
+    const chk=[
+      ['Character master set', true],
+      ['ffmpeg installed', !!SYS.ffmpeg],
+      ['Voice: '+SYS.tts, true],
+      ['3 builds/day scheduled', (SYS.builds_per_day||0)>=1],
+      ['Reels built', (st.reels_ready+st.published)>0],
+      ['Jobs failed (0 best)', st.jobs_failed===0],
+    ];
+    document.getElementById('d-checks').innerHTML=chk.map(([t,ok])=>
+      `<div class="check"><span class="pill ${ok?'ok':'warn'}">${ok?'OK':'CHECK'}</span>${t}</div>`).join('');
+    const ip = location.hostname;
+    document.getElementById('d-cmd').textContent =
+`# naye Ubuntu server pe (ya isi server pe dobara):
+git clone <your-repo> ai-influencer-os && cd ai-influencer-os
+bash deploy/deploy.sh --tunnel
+
+# ya Docker se:
+docker compose up -d --build`;
+  }catch(e){}
+}
+function copyCmd(){
+  navigator.clipboard.writeText(document.getElementById('d-cmd').textContent)
+    .then(()=>toast('Copied','ok')).catch(()=>toast('Copy fail','err'));
+}
+
+/* ---------- logs ---------- */
+async function loadLogs(){
+  try{
+    const ls=await api('/api/logs?after='+LOG_AFTER+'&limit=120');
+    if(!ls.length) return;
+    const box=document.getElementById('logbox');
+    for(const l of ls){
+      LOG_AFTER=Math.max(LOG_AFTER,l.id);
+      const d=new Date(l.ts*1000).toLocaleTimeString();
+      box.innerHTML+=`<div class="l-${l.level}">${d}  [${l.source}] ${l.message}</div>`;
+    }
+    box.scrollTop=box.scrollHeight;
+  }catch(e){}
+}
+
+function initApp(){
+  loadStats(); loadJobs(); loadLogs();
+  setInterval(()=>{ loadStats(); loadJobs(); loadLogs();
+    if(TAB==='posts') loadPosts();
+    if(TAB==='deploy') loadDeploy();
+    if(TAB==='keys' && !DIRTY) loadIntegrations(); }, 5000);
+}
+boot();
+document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

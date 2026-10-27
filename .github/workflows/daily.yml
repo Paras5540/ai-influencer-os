@@ -1,0 +1,77 @@
+name: ai-influencer-daily
+
+# Zero-server option: GitHub Actions runs the pipeline on a schedule for free.
+# Add your keys as repository secrets (Settings -> Secrets -> Actions).
+on:
+  schedule:
+    - cron: "0 6 * * *"    # 06:00 IST = 00:30 UTC (build 2 reels)
+    - cron: "30 3 * * *"   # 09:00 IST publish
+    - cron: "30 14 * * *"  # 20:00 IST publish
+  workflow_dispatch:
+
+concurrency:
+  group: influencer
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event.schedule == '0 6 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-noto-devanagari
+          pip install -r requirements.txt
+      - name: Write env
+        run: |
+          cat > .env <<'EOF'
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+          FAL_KEY=${{ secrets.FAL_KEY }}
+          IG_USER_ID=${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN=${{ secrets.IG_ACCESS_TOKEN }}
+          YT_CLIENT_ID=${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET=${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN=${{ secrets.YT_REFRESH_TOKEN }}
+          EOF
+      - name: Build reels
+        run: python src/02_generate_batch.py --count 2
+      - name: Cache artifacts for publish job
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue
+          path: out/
+          retention-days: 3
+
+  publish:
+    if: github.event.schedule != '0 6 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: queue
+          path: out/
+      - name: Write env
+        run: |
+          cat > .env <<'EOF'
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+          FAL_KEY=${{ secrets.FAL_KEY }}
+          IG_USER_ID=${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN=${{ secrets.IG_ACCESS_TOKEN }}
+          YT_CLIENT_ID=${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET=${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN=${{ secrets.YT_REFRESH_TOKEN }}
+          EOF
+      - name: Publish one
+        run: python src/05_publish.py --limit 1

@@ -1,0 +1,99 @@
+{
+  "character_id": "riya_v5",
+  "name": "Riya Malhotra",
+  "age": 24,
+  "city": "Mumbai (Bandra)",
+  "persona_one_liner": "Girl-next-door glam — baal khule, warm lamp light, black ribbed top, halka liner. Real lagti hai, AI nahi.",
+  "business_model": "public funnel (IG/Shorts) -> premium subscription (Fanvue)",
+
+  "_provenance": {
+    "note": "User ne khud ye AI face generate kiya. Ye original synthetic identity hai — kisi real insaan ka clone nahi.",
+    "source": "assets/character_v5/user_original.png (user ka generated reference)",
+    "master_note": "master.png = wahi face, par phone-photo realism ke saath rebuild kiya (pores, peach fuzz, lamp light, hair down) taaki AI glow na rahe."
+  },
+
+  "identity_lock": {
+    "face": "oval with a soft tapering jaw, gentle cheek fullness",
+    "eyes": "almond hazel-brown, slight upturn, soft brown winged liner + mascara, visible iris fibres",
+    "brows": "thick, dark, softly arched, straight at the front, tapers at the end",
+    "nose": "straight narrow bridge, refined tip",
+    "lips": "full with a defined cupid's bow, rosy-mauve tint, slight gloss",
+    "skin": "warm light-medium, visible pores, fine peach fuzz, faint natural blemishes, thin under-eye texture, small mole on LEFT jawline",
+    "hair": "dark espresso-brown, long loose waves, centre-side part, face-framing strands, natural flyaways",
+    "ears": "two small studs in the LEFT ear",
+    "body": "166 cm, slim, natural proportions, no exaggeration",
+    "never": [
+      "smooth airbrushed plastic skin",
+      "beauty filter / glow blur",
+      "hair straightened or tied back tight",
+      "green or blue contacts",
+      "exaggerated body proportions",
+      "removing the mole or the natural blemishes"
+    ]
+  },
+
+  "styling_defaults": {
+    "_why": "Har generation me yahi styling rakho — isi se 'same insaan' lagti hai.",
+    "hair": "down, loose waves, centre-side part, face-framing strands",
+    "makeup": "soft brown winged liner, mascara, groomed brows, rosy-mauve lip, subtle cream blush",
+    "signature_top": "black ribbed cotton tank top / black oversized tee",
+    "lighting": "warm lamp light from the right, soft shadow on the left",
+    "set": "cosy bedroom, plain warm wall, blurred frame or lamp behind",
+    "camera": "phone 26mm, chest-up, slight high angle",
+    "grade": "warm, natural white balance, no HDR"
+  },
+
+  "voice": {
+    "provider": "edge",
+    "edge_voice": "hi-IN-SwaraNeural",
+    "edge_rate": "+4%",
+    "edge_pitch": "+4Hz",
+    "elevenlabs_voice_id": "REPLACE_WITH_ELEVENLABS_ID_IF_YOU_UPGRADE",
+    "language": "Hindi (Devanagari) + light Hinglish",
+    "tone": "soft, low, close-mic, thodi si shy — jaise raat ko phone pe baat kar rahi ho",
+    "banned": ["news anchor tone", "screaming", "fake excitement", "corporate Hindi"]
+  },
+
+  "tiers": {
+    "public": {
+      "platforms": ["instagram_reels", "youtube_shorts"],
+      "rating": "sfw",
+      "allowed": ["tank top + jeans", "oversized shirt", "midi dress", "saree", "gym wear", "swimwear at beach"],
+      "never": ["nudity", "lingerie", "see-through", "explicit text", "'subscribe for nudes' in caption"],
+      "caption_rule": "Caption me sexual content bechna mana hai. Sirf bio link. Meta caption hatata hai, link rehne deta hai."
+    },
+    "premium": {
+      "platform": "fanvue",
+      "rating": "glamour",
+      "allowed": ["lingerie", "boudoir", "implied with coverage", "satin slip dress", "tank top + shorts", "saree drape"],
+      "never": ["explicit sexual acts", "genitalia", "any under-18 cue", "real person's face", "school uniform", "baby voice"],
+      "price_band_inr": [299, 1499],
+      "post_frequency_per_day": 2
+    }
+  },
+
+  "content_pillars": [
+    { "name": "night_routine", "share": 0.25, "example": "raat ka skincare, 3 step" },
+    { "name": "dating_tea", "share": 0.2, "example": "dating app pe red flag #1" },
+    { "name": "city_life", "share": 0.2, "example": "Bandra cafe, 200 rupaye" },
+    { "name": "glow_up_honest", "share": 0.15, "example": "no-makeup se shoot-ready" },
+    { "name": "premium_teaser", "share": 0.2, "example": "naya set aaya, link bio me" }
+  ],
+
+  "posting": {
+    "timezone": "Asia/Kolkata",
+    "public_slots": ["12:30", "20:30"],
+    "premium_slots": ["09:00", "22:00"],
+    "per_week_public": 12,
+    "always_disclose_ai": true,
+    "ai_label_text": "AI-generated character"
+  },
+
+  "video_spec": {
+    "aspect": "9:16",
+    "resolution": "1080x1920",
+    "fps": 30,
+    "target_duration_sec": 12,
+    "caption_style": "bold white, black outline, lower third"
+  }
+}

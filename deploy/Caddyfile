@@ -1,0 +1,11 @@
+# Apna domain + free auto-HTTPS (VPS pe). Caddy install karo, phir:
+#   sudo cp deploy/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+influencer.yourdomain.com {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8000
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+    }
+}

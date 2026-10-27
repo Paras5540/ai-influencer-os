@@ -1,0 +1,41 @@
+# 01c — MASTER FACE PROMPT (v4 — "Riya", golden-tan + strong brows archetype)
+
+Ye ek baar chalao. Jo face aaye wahi permanent identity hai.
+
+---
+
+## Prompt
+
+Photorealistic frontal portrait of an original 24-year-old Indian woman, not resembling any real person.
+Warm golden-tan skin with real pore texture and a sun-kissed dewy finish, light freckles dusted across
+the nose bridge and upper cheeks, a small dark mole on the left jawline, a tiny 1 cm scar above the
+right brow. Shorter rounded-oval face, soft but defined cheekbones, gently rounded jawline, soft chin.
+Large dark warm-brown almond eyes with outer corners slightly turned UP, visible iris fibres, subtle
+natural eyeliner only at the upper lash line, natural lashes. Naturally thick dark brows with a soft
+arch and tapered ends. Nose with a small bump on the bridge and a slightly wider soft tip. Full lips
+with a fuller lower lip and a soft cupid's bow, rosy-pink gloss, gentle closed-lip smile. Dark
+auburn-brown hair with warm highlights, long layers, half pulled up in a loose messy ponytail, soft
+face-framing strands, light frizz. Small gold hoop earrings. Plain black oversized cotton t-shirt.
+Against a white textured plaster wall, warm hard daylight from the left, strong highlight along the
+left cheekbone and nose bridge, soft shadow on the right of the face. Head and shoulders, straight-on,
+phone camera 26 mm at eye level, natural sensor noise, no studio lighting, no beauty retouching,
+visible skin texture. Vertical 3:4. No text, no watermark, no logo.
+
+---
+
+## Identity checklist (reject karo agar)
+- [ ] Brows patli / halki → reject (ye archetype ki jaan hai)
+- [ ] Skin golden-tan nahi, pale lag rahi → reject
+- [ ] Aankh ke outer corner neeche jhuk rahe → reject (ye v3 ka face hai)
+- [ ] Freckles / left jawline ka mole gayab → reject
+- [ ] Face lamba (long) lag raha → reject (v4 short rounded-oval hai)
+- [ ] Hoop earrings nahi → reject
+- [ ] Skin plastic / airbrushed → reject
+
+## Locked looks (already generated)
+| File | Use |
+|---|---|
+| `master.png` | identity anchor |
+| `sheet.png` | 6 angles, consistency proof |
+| `look_red_chair.png` | public hero shot (viral hook) |
+| `look_saree_evening.png` | desi/festival + premium tier |

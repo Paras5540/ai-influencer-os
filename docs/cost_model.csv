@@ -1,0 +1,14 @@
+item,provider,what_it_does,free_tier,paid_plan_inr_per_month,cost_per_reel_inr
+Scene image (face-locked),Google Gemini 2.5 Flash Image (nano-banana),edits master.png into a new scene while keeping the face,~ limited free tier in AI Studio,nano-banana paid tier ~ Rs 1500-2500 for 1000+ images,2-4
+Script + caption,Google Gemini 2.5 Flash,30-42 word Hindi script + hook + hashtags,generous free tier,~0 (free tier enough for 60 reels/month),0
+Voice,ElevenLabs multilingual v2,Hindi voice,10k chars/month free (approx),Rs 450 (Starter) - Rs 1900 (Creator),3-6
+Talking video (image+audio),fal.ai Kling Avatar / Sync Lipsync,face-synced talking clip,no free tier,Rs 800-2500 (pay per use),12-25
+B-roll alternates,fal.ai Kling 2.x image-to-video,5s motion clip,no free tier,pay per use,20-40
+Render + captions,ffmpeg,1080x1920 + burned Hindi captions,free,0,0
+Instagram publish,Instagram Graph API,Reels upload,free,0,0
+YouTube Shorts,YouTube Data API v3,Shorts upload,free quota 10k units/day,0,0
+Hosting (optional),GitHub Actions cron,free 2000 min/month,free,0,0
+Hosting (optional),VPS 1 vCPU 2GB,always-on cron,Rs 350-600,0
+TOTAL FREE-PATH (own effort, free tiers),,,,0-500,5-10
+TOTAL PAID-PATH (hands-off, no queues),,,,Rs 2800-5800,20-40
+REFERENCE: Arcads + n8n + Blotato (video 1 stack),,,,"Rs 6000-12000",80-150

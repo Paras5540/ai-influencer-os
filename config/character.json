@@ -1,0 +1,74 @@
+{
+  "character_id": "ira_v1",
+  "name": "Ira Sharma",
+  "persona_one_liner": "24-year-old Mumbai girl jo sach bolti hai — fashion, cafe-hopping, self-care aur paisa-saving tips, Hindi-Hinglish mein.",
+  "identity_lock": {
+    "do_not_change": [
+      "face shape (round-soft jawline)",
+      "naturally full dark eyebrows, straight with slight arch",
+      "large dark-brown almond eyes, slight upturn at outer corner",
+      "straight nose with a tiny bump on the bridge",
+      "full lips, naturally rosy, no filler look",
+      "small beauty spot on the LEFT cheekbone (2 cm below the eye)",
+      "mole-free right cheek",
+      "hair: long dark-brown wavy, off-centre parting, falls over RIGHT shoulder most of the time",
+      "small gold hoop earrings + thin gold chain (always worn)",
+      "skin: medium-brown warm undertone, visible pores, a few faint marks — never airbrushed"
+    ],
+    "age": 24,
+    "height_cm": 162,
+    "body": "slim-athletic, average Indian proportions, no exaggerated features",
+    "wardrobe_palette": [
+      "oversized cotton shirts in cream/white/olive",
+      "kurti with jeans (Indo-western)",
+      "simple bodycon dress for evening content",
+      "gym: plain tee + leggings",
+      "colours: cream, olive, rust, black, pastel pink — never neon"
+    ],
+    "signature_details": [
+      "always a thin gold chain",
+      "small gold hoops",
+      "one thin silver ring on right hand",
+      "nails short, neutral pink",
+      "no heavy makeup — kohl + tinted lip balm only"
+    ]
+  },
+  "voice": {
+    "language": "Hindi (Devanagari script) with natural Hinglish words like 'actually', 'literally', 'vibe'",
+    "accent": "neutral Mumbai Hindi, NOT news-anchor Hindi",
+    "speed": "1.05x",
+    "energy": "warm, slightly cheeky, like talking to a friend on a call",
+    "elevenlabs_voice_id": "REPLACE_WITH_YOUR_ELEVENLABS_VOICE_ID",
+    "elevenlabs_settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.85,
+      "style": 0.35,
+      "use_speaker_boost": true
+    },
+    "banned_tones": ["salesy", "shouting", "fake-excited", "corporate"]
+  },
+  "content_pillars": [
+    { "name": "city_life", "share": 0.3, "example": "Bandra mein 200 rupaye mein best coffee" },
+    { "name": "fashion_on_budget", "share": 0.25, "example": "Ek kurti, teen looks" },
+    { "name": "self_care_habits", "share": 0.2, "example": "Raat ko phone side rakho — 5 min rule" },
+    { "name": "money_tips", "share": 0.15, "example": "Salary aate hi 3 hisse" },
+    { "name": "relatable_humour", "share": 0.1, "example": "Monday morning ka sach" }
+  ],
+  "posting": {
+    "timezone": "Asia/Kolkata",
+    "slots": ["09:30", "13:30", "20:00"],
+    "per_week": 14,
+    "platforms": ["instagram_reels", "youtube_shorts"],
+    "always_disclose_ai": true,
+    "ai_label_text": "AI-generated character"
+  },
+  "video_spec": {
+    "aspect": "9:16",
+    "resolution": "1080x1920",
+    "fps": 30,
+    "target_duration_sec": 14,
+    "max_duration_sec": 30,
+    "caption_style": "bold white, black outline, bottom-third, 2 lines max",
+    "music_mood": ["lofi", "soft-pop", "desi-indie"]
+  }
+}

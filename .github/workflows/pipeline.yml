@@ -1,0 +1,112 @@
+name: pipeline
+
+# Server-free automation: GitHub Actions khud reels banata hai (ffmpeg + AI) aur post karta hai.
+# 3 builds/day + publish slots. Times UTC me (IST - 5:30).
+on:
+  schedule:
+    - cron: "30 1 * * *"    # 07:00 IST build
+    - cron: "30 7 * * *"    # 13:00 IST build
+    - cron: "30 13 * * *"   # 19:00 IST build
+    - cron: "0 7 * * *"     # 12:30 IST IG
+    - cron: "0 15 * * *"    # 20:30 IST IG
+    - cron: "30 3 * * *"    # 09:00 IST Fanvue
+    - cron: "30 16 * * *"   # 22:00 IST Fanvue
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "build | instagram | youtube | fanvue"
+        default: "build"
+      count:
+        description: "kitni reels (build ke liye)"
+        default: "1"
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: System deps (ffmpeg + Devanagari font)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-noto-devanagari
+
+      - name: Python deps
+        run: pip install -q -r requirements.txt
+
+      - name: Write .env from secrets
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          FAL_KEY=${{ secrets.FAL_KEY }}
+          ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+          IG_USER_ID=${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN=${{ secrets.IG_ACCESS_TOKEN }}
+          YT_CLIENT_ID=${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET=${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN=${{ secrets.YT_REFRESH_TOKEN }}
+          FANVUE_ACCESS_TOKEN=${{ secrets.FANVUE_ACCESS_TOKEN }}
+          FANVUE_REFRESH_TOKEN=${{ secrets.FANVUE_REFRESH_TOKEN }}
+          FANVUE_CLIENT_ID=${{ secrets.FANVUE_CLIENT_ID }}
+          FANVUE_CLIENT_SECRET=${{ secrets.FANVUE_CLIENT_SECRET }}
+          FANVUE_PRICE_CENTS=${{ secrets.FANVUE_PRICE_CENTS }}
+          CHARACTER_CONFIG=character_v5_locked.json
+          CHARACTER_DIR=character_v6
+          TZ=Asia/Kolkata
+          EOF
+          echo "env written"
+
+      - name: Pick task
+        id: t
+        run: |
+          TASK="${{ github.event.inputs.task }}"
+          COUNT="${{ github.event.inputs.count }}"
+          if [ -z "$TASK" ]; then
+            case "${{ github.event.schedule }}" in
+              "30 1 * * *"|"30 7 * * *"|"30 13 * * *") TASK=build ;;
+              "0 7 * * *"|"0 15 * * *")               TASK=instagram ;;
+              "30 3 * * *"|"30 16 * * *")             TASK=fanvue ;;
+              *) TASK=build ;;
+            esac
+          fi
+          echo "task=$TASK" >> $GITHUB_OUTPUT
+          echo "count=${COUNT:-1}" >> $GITHUB_OUTPUT
+          echo "Chosen: $TASK"
+
+      - name: Run pipeline
+        env:
+          BUILDS_PER_DAY: "3"
+        run: |
+          python scripts/ci_run.py --task "${{ steps.t.outputs.task }}" --count "${{ steps.t.outputs.count }}"
+
+      - name: Save content + ledger
+        run: |
+          git config user.name  "influencer-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add content state || true
+          git diff --staged --quiet || git commit -m "content: ${{ steps.t.outputs.task }} $(date -u +%FT%TZ)"
+          git push || echo "push skipped"
+
+      - name: Upload reels as artifact (backup, 90 days)
+        if: steps.t.outputs.task == 'build'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reels-${{ github.run_id }}
+          path: out/**/final.mp4
+          retention-days: 30
+          if-no-files-found: ignore

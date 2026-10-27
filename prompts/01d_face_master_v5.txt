@@ -1,0 +1,60 @@
+# 01d — MASTER FACE PROMPT (v5 — FINAL, user's own AI face)
+
+Ye face user ne khud generate kiya. Isko master banaya gaya — wahi face, par phone-photo realism ke
+saath (AI glow hataya). Ek baar chalao, phir kabhi regenerate nahi.
+
+---
+
+## Prompt (master rebuild)
+
+Use the reference image as the exact identity of this woman. Keep her face 100% identical: same oval
+face with soft tapering jaw, same thick dark softly-arched brows, same almond hazel-brown eyes with
+slight upturn and defined crease, same straight narrow nose with refined tip, same full lips with
+defined cupid's bow, same hairline, same two small studs in her left ear, tiny mole on the left jawline.
+
+Keep the same styling and mood as the reference, but make it look like an authentic phone photo
+instead of an AI render:
+- Hair DOWN, long loose dark espresso-brown waves over both shoulders, centre-side part, face-framing
+  strands, natural flyaways, not glossy.
+- Light natural makeup: soft brown winged liner, mascara, groomed brows, rosy-mauve lip tint, subtle
+  cream blush.
+- Wardrobe: black ribbed cotton tank top with a modest scoop neckline.
+- Expression: warm closed-lip smile, head tilted slightly toward her shoulder, direct eye contact.
+- Setting: cosy bedroom corner, warm bedside lamp on the right, soft dark wall, blurred photo frame.
+- Light: soft warm lamp light from the right, gentle fill, natural glow, soft shadow on the left.
+- Skin: real texture — visible pores on nose and cheeks, fine peach fuzz, faint natural blemishes,
+  thin under-eye texture. No smoothing, no airbrush, no beauty filter.
+- Camera: phone rear camera 26mm, chest and shoulders, slight high angle, natural sensor noise.
+Vertical 3:4. Photorealistic and honest, not a render. No text, no watermark, no logo.
+
+---
+
+## Consistency rules (roz ke generations ke liye)
+
+1. Master **hi** reference jaata hai — har baar.
+2. Prompt me sirf **scene + outfit + light** badlo. Face ke words kabhi mat likho.
+3. Styling hamesha same: **baal khule**, soft brown wing liner, rosy-mauve lip, black top family.
+4. Light hamesha **right se warm** (jab tak scene demand na kare).
+5. Vibe: "raat ko selfie" — studio, ring light, HDR, beauty filter = instantly AI lagega.
+
+## Reject karo agar
+- Skin smooth/plastic (pores nahi dikh rahe)
+- Baal straight ya tight bun
+- Brows patli
+- Aankh me green/blue tint
+- Chehra ka oval shape lamba ya chauda ho gaya
+- Mole left jawline pe nahi
+
+## Locked looks
+| File | Use |
+|---|---|
+| `master.png` | identity anchor (bedroom, tank top, lamp) |
+| `sheet.png` | 6 angles — consistency proof |
+| `look_cafe.png` | public day content |
+| `look_evening_dress.png` | public evening / premium teaser |
+| `user_original.png` | user ka original generated reference |
+
+## Ek zaroori baat (provider limit)
+Hamara image generator lingerie/boudoir level ke shots ko safety filter se block karta hai (2 baar
+hota hai). Iska matlab face system kharab nahi — us level ke shots aap **SeaArt / Tensor.Art / Fanvue
+ke tools** pe banao, aur wahan **yahi `master.png` reference** upload karo. Face wahi rahega.
