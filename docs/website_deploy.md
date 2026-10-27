@@ -39,7 +39,7 @@ Kholo: `http://SERVER-IP:8000`
 
 ```bash
 pip install -r web/requirements.txt
-sudo apt install -y ffmpeg fonts-noto-devanagari
+sudo apt install -y ffmpeg fonts-noto-core
 ADMIN_PASSWORD=test123 python -m uvicorn web.app:app --host 0.0.0.0 --port 8000
 ```
 
@@ -126,7 +126,7 @@ to public (IG) post ke liye pehle Gemini key daalo — warna wahi shot har reel 
 | Problem | Fix |
 |---|---|
 | `ffmpeg not found` | Docker me already hai; VPS pe `apt install ffmpeg` |
-| Captions me `□□□` | `apt install fonts-noto-devanagari` |
+| Captions me `□□□` | `apt install fonts-noto-core` |
 | Job 100% pe fail | Logs tab dekho — kaun sa step; aksar key invalid ya quota |
 | Video chalta hai par aawaz nahi | browser me click karke play karo (autoplay muted hota hai) |
 | Schedule fire nahi hua | server ka timezone IST hona chahiye (`TZ=Asia/Kolkata`) ya Render sleep |

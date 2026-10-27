@@ -106,7 +106,7 @@ Dockerfile                         one-command deploy
 ```bash
 cp .env.example .env          # keys; sab free tier se shuru ho sakta hai
 pip install -r requirements.txt
-sudo apt install -y ffmpeg fonts-noto-devanagari
+sudo apt install -y ffmpeg fonts-noto-core
 python src/00_preflight.py
 ```
 
@@ -169,7 +169,7 @@ python src/06_fanvue.py --mass --text "welcome 🖤"  # welcome / win-back DM
 
 | Problem | Fix |
 |---|---|
-| Captions me boxes | `sudo apt install fonts-noto-devanagari` |
+| Captions me boxes | `sudo apt install fonts-noto-core` |
 | Edge TTS silent | `pip install -U edge-tts` (Microsoft endpoint change hota rehta hai) |
 | Fanvue 401 | token expire — refresh token ya re-OAuth |
 | Fanvue 400 on post | price ≥ 300 cents, `audience` required |

@@ -44,7 +44,10 @@ jobs:
       - name: System deps (ffmpeg + Devanagari font)
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg fonts-noto-devanagari
+          sudo apt-get install -y -qq ffmpeg
+          # Devanagari font: package naam distro pe depend karta hai
+          sudo apt-get install -y -qq fonts-noto-core || sudo apt-get install -y -qq fonts-noto || true
+          fc-list :lang=hi | head -3
 
       - name: Python deps
         run: pip install -q -r requirements.txt
