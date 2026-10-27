@@ -42,16 +42,18 @@ def run(cmd):
         raise SystemExit(f"command failed ({p.returncode})")
 
 
-def build(count=1):
+def build(count=1, force=False):
     l = ledger()
     today = datetime.now().strftime("%Y-%m-%d")
     done = l["days"].get(today, {}).get("built", 0)
     target = int(os.getenv("BUILDS_PER_DAY", "3"))
-    if done >= target:
+    if done >= target and not force:
         print(f"already built {done}/{target} today — skip")
         return
-    n = min(target - done, count)
-    run([sys.executable, "src/02_generate_batch.py", "--count", str(n)])
+    n = count if force else min(target - done, count)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import montage
+    montage.build(n)
     l["days"].setdefault(today, {})["built"] = done + n
     save(l)
     collect()
@@ -135,14 +137,14 @@ def publish(platform, price=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", required=True,
-                    choices=["build", "instagram", "ig", "youtube", "fanvue", "collect"])
+                    choices=["build", "reel", "instagram", "ig", "youtube", "fanvue", "collect"])
     ap.add_argument("--count", type=int, default=1)
     ap.add_argument("--price", type=int, default=None)
     a = ap.parse_args()
     os.environ.setdefault("CHARACTER_CONFIG", "character_v5_locked.json")
     os.environ.setdefault("CHARACTER_DIR", "character_v6")
-    if a.task == "build":
-        build(a.count)
+    if a.task in ("build", "reel"):
+        build(a.count, force=(a.task == "reel"))
     elif a.task == "collect":
         collect()
     else:

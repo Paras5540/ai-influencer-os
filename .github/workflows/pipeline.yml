@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "build | collect | instagram | youtube | fanvue"
+        description: "build | instagram | youtube | fanvue"
         default: "build"
       count:
         description: "kitni reels (build ke liye)"

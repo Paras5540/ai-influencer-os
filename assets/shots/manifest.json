@@ -1,0 +1,34 @@
+{
+  "shot_01.png": {
+    "tag": "fashion",
+    "hook": "3 LOOKS, EK DIN"
+  },
+  "shot_02.png": {
+    "tag": "dance",
+    "hook": "SHE CAN MOVE"
+  },
+  "shot_03.png": {
+    "tag": "gym",
+    "hook": "GYM SE GLOW"
+  },
+  "shot_04.png": {
+    "tag": "desi",
+    "hook": "DESI GIRL"
+  },
+  "shot_05.png": {
+    "tag": "street",
+    "hook": "STREET STYLE"
+  },
+  "shot_06.png": {
+    "tag": "cafe",
+    "hook": "CAFE DIARY"
+  },
+  "shot_07.png": {
+    "tag": "night",
+    "hook": "NIGHT OUT"
+  },
+  "shot_08.png": {
+    "tag": "beach",
+    "hook": "BEACH DAY"
+  }
+}
