@@ -26,6 +26,8 @@ concurrency:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run:
@@ -117,3 +119,29 @@ jobs:
           path: out/**/final.mp4
           retention-days: 30
           if-no-files-found: ignore
+
+  # content/ update hone ke baad gallery khud deploy ho jaye
+  pages:
+    needs: run
+    if: needs.run.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./content
+      - id: deployment
+        uses: actions/deploy-pages@v4
