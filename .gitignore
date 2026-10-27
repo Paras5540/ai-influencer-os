@@ -1,8 +1,6 @@
-# runtime data (never commit)
+# runtime data (never commit) — content/ aur state/ TRACK hote hain (CI unhe commit karta hai)
 data/
 out/
-content/
-state/
 backup/
 logs/*.log
 .env

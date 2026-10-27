@@ -81,7 +81,7 @@ def collect():
         index.append({"id": pid, "hook": m.get("hook", ""), "caption": m.get("caption_instagram", ""),
                       "status": m.get("status", "queued"), "created": m.get("created", ""),
                       "video": f"{pid}/final.mp4"})
-    index = sorted(index, key=lambda x: x.get("created", ""), reverse=True)[:40]  # latest 40
+    index = sorted(index, key=lambda x: x.get("created", ""), reverse=True)[:12]  # latest 40
     index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2))
     # purane folders hatao (repo size control)
     keep = {i["id"] for i in index}

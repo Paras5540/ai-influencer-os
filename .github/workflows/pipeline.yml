@@ -103,9 +103,11 @@ jobs:
         run: |
           git config user.name  "influencer-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add content state || true
-          git diff --staged --quiet || git commit -m "content: ${{ steps.t.outputs.task }} $(date -u +%FT%TZ)"
-          git push || echo "push skipped"
+          git add -f content state || true
+          if git diff --staged --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "content: ${{ steps.t.outputs.task }} $(date -u +%FT%TZ)"
+          git pull --rebase --autostash origin main || true
+          git push || echo "push failed (dekho permissions)"
 
       - name: Upload reels as artifact (backup, 90 days)
         if: steps.t.outputs.task == 'build'
