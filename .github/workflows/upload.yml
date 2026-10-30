@@ -1,0 +1,78 @@
+name: upload-swap
+
+# Aap assets/uploads/ me video daalo -> ye khud character swap karke gallery me daal deta hai.
+# POST nahi karta. Post ke liye: Actions -> pipeline -> Run workflow -> task=instagram (ek confirm).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/uploads/**.mp4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: upload-swap
+  cancel-in-progress: false
+
+jobs:
+  swap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: System deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          sudo apt-get install -y -qq fonts-noto-core || sudo apt-get install -y -qq fonts-noto || true
+
+      - name: Python deps
+        run: pip install -q -r requirements.txt
+
+      - name: Env
+        run: |
+          cat > .env <<EOF
+          FAL_KEY=${{ secrets.FAL_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          CHARACTER_CONFIG=character_v5_locked.json
+          CHARACTER_DIR=character_v6
+          TZ=Asia/Kolkata
+          EOF
+
+      - name: Character swap
+        run: python scripts/swap_upload.py
+
+      - name: Collect for gallery
+        run: python scripts/ci_run.py --task collect || true
+
+      - name: Commit reels + state
+        run: |
+          git config user.name "influencer-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -f content state assets/uploads || true
+          if git diff --staged --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "swap: upload processed $(date -u +%FT%TZ)"
+          git pull --rebase --autostash origin main || true
+          git push || echo "push failed"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./content
+      - id: deployment
+        uses: actions/deploy-pages@v4
