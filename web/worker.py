@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 
 import db
+import persist
 import pipeline
 
 
@@ -15,11 +16,18 @@ def _run_job(job):
     try:
         if kind == "build":
             pipeline.build_reel(jid)
+            persist.save_settings()
             return
         if kind == "swap":
             pipeline.swap_video(jid, payload["file"],
                                 hook=payload.get("hook") or "NEW DROP",
                                 caption=payload.get("caption") or "")
+            persist.save_settings()
+            try:
+                newest = db.list_posts(1)[0]
+                persist.save_reel(newest)
+            except Exception:
+                pass
             return
         if kind == "publish":
             platform = payload["platform"]
@@ -38,6 +46,8 @@ def _run_job(job):
                            published_at=datetime.now().isoformat(timespec="seconds"),
                            remote_id=str(rid))
             db.update_job(jid, status="done", progress=100, message=f"published to {platform}")
+            persist.save_reel(post)
+            persist.save_settings()
             db.log(f"post #{post['id']} published to {platform}", "info", "publish")
             return
         if kind == "auto":

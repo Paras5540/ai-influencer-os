@@ -31,6 +31,7 @@ for p in (str(WEB), str(ROOT / "src")):
 
 import db  # noqa: E402
 import integrations  # noqa: E402
+import persist  # noqa: E402
 import pipeline  # noqa: E402
 import worker  # noqa: E402
 
@@ -55,6 +56,7 @@ def guard(req: Request):
 
 @app.on_event("startup")
 def _startup():
+    persist.restore_settings()
     worker.start()
     db.log("dashboard started", "info", "app")
 
