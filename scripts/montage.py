@@ -22,7 +22,8 @@ SHOTS = ROOT / "assets" / "shots"
 MUSIC = ROOT / "assets" / "music"
 OUT = ROOT / "out"
 W, H = 1080, 1920
-SHOT_SEC = float(os.getenv("SHOT_SEC", "0.7"))
+SHOT_SEC = float(os.getenv("SHOT_SEC", "1.9"))
+TARGET_SEC = float(os.getenv("TARGET_SEC", "30"))
 
 CAPTIONS = [
     ("3 OUTFITS, EK DIN", "Save kar lo. Kaunsa best laga? 👇\n\n"
@@ -148,7 +149,7 @@ def build(count=1, hooks=None):
     OUT.mkdir(parents=True, exist_ok=True)
     day = int(time.time() // 86400)
     for k in range(count):
-        n_shots = random.Random(day + k).choice([6, 7, 8])
+        n_shots = max(6, int(round(TARGET_SEC / SHOT_SEC)))
         chosen = pick(n_shots, day * 10 + k)
         hook = (hooks[(k % len(hooks))] if hooks else hook_for(chosen[0]))
         tag = (manifest().get(Path(chosen[0]).name) or {}).get("tag", "fashion")
