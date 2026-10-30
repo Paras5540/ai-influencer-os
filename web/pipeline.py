@@ -373,41 +373,54 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
                            "(Settings → APIs → FAL_KEY)")
     os.environ["FAL_KEY"] = key
 
-    # 10s trim (motion model limit)
-    db.update_job(job_id, progress=15, message="trim 10s")
-    clip = wd / "ref.mp4"
-    media.run(["ffmpeg", "-y", "-i", str(src), "-t", "10", "-c:v", "libx264",
-               "-preset", "veryfast", "-crf", "23", "-an", "-pix_fmt", "yuv420p", str(clip)])
+    # original duration jitni hi reel banegi — 10s segments me swap karke jodenge
+    total = media.duration(str(src))
+    seg = 10.0
+    n = max(1, int(-(-total // seg)))
+    db.update_job(job_id, progress=15, message=f"segments: {n} (total {total:.0f}s)")
 
     shot = _master()
-    db.update_job(job_id, progress=35, message="character swap (fal)")
     ep = json.loads((ROOT / "config" / "endpoints.json").read_text(encoding="utf-8"))
     m = ep.get("motion", {})
     endpoint = m.get("endpoint", "fal-ai/kling-video/v1.6/pro/motion-control")
-
     img_url = providers.upload_public(str(shot))
-    vid_url = providers.upload_public(str(clip))
-    out = providers.fal_run(endpoint, {
-        "image_url": img_url, "video_url": vid_url,
-        "character_orientation": "video", "mode": m.get("mode", "720p"),
-        "prompt": "same person as the image, performing the exact motion of the reference video, "
-                  "natural body physics, photorealistic, no text"})
 
-    url = None
-    for k in ("video", "video_url", "url", "output"):
-        v = out.get(k) if isinstance(out, dict) else None
-        if isinstance(v, dict):
-            v = v.get("url")
-        if isinstance(v, str) and v.startswith("http"):
-            url = v
-            break
-    if not url:
-        raise RuntimeError(f"swap response me video nahi mili: {str(out)[:200]}")
+    parts = []
+    for i in range(n):
+        db.update_job(job_id, progress=20 + int(50 * i / n), message=f"swap {i+1}/{n}")
+        piece = wd / f"seg{i}.mp4"
+        media.run(["ffmpeg", "-y", "-ss", str(i * seg), "-i", str(src), "-t", str(seg),
+                   "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-an",
+                   "-pix_fmt", "yuv420p", str(piece)])
+        out = providers.fal_run(endpoint, {
+            "image_url": img_url, "video_url": providers.upload_public(str(piece)),
+            "character_orientation": "video", "mode": m.get("mode", "720p"),
+            "prompt": "same person as the image, performing the exact motion of the reference "
+                      "video, natural body physics, photorealistic, no text"})
+        url = None
+        for k in ("video", "video_url", "url", "output"):
+            v = out.get(k) if isinstance(out, dict) else None
+            if isinstance(v, dict):
+                v = v.get("url")
+            if isinstance(v, str) and v.startswith("http"):
+                url = v; break
+        if not url:
+            raise RuntimeError(f"segment {i+1} me video nahi mili")
+        dst = wd / f"sw{i}.mp4"
+        providers.download(url, dst)
+        parts.append(dst)
+
     raw = wd / "swapped.mp4"
-    providers.download(url, raw)
+    if len(parts) == 1:
+        raw = parts[0]
+    else:
+        lst = wd / "segs.txt"
+        lst.write_text("".join(f"file '{x.name}'\n" for x in parts))
+        media.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst),
+                   "-c", "copy", str(raw)])
 
     db.update_job(job_id, progress=80, message="render 1080x1920")
-    dur = min(media.duration(str(raw)), 10.0)
+    dur = media.duration(str(raw))
     ass = wd / "hook.ass"
     ass.write_text(montage.ass(hook, dur), encoding="utf-8")
     music = montage.pick_music()
