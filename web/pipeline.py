@@ -367,11 +367,14 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
     if not src.exists():
         raise RuntimeError("uploaded video nahi mili")
 
+    vkey = _setting("VMODEL_API_KEY")
     key = _setting("FAL_KEY")
-    if not key:
-        raise RuntimeError("FAL_KEY missing — swap engine ke liye fal.ai key chahiye "
-                           "(Settings → APIs → FAL_KEY)")
-    os.environ["FAL_KEY"] = key
+    if not vkey and not key:
+        raise RuntimeError("Swap key missing — APIs tab me VMODEL_API_KEY (free) ya FAL_KEY daalo")
+    if vkey:
+        os.environ["VMODEL_API_KEY"] = vkey
+    if key:
+        os.environ["FAL_KEY"] = key
 
     # original duration jitni hi reel banegi — 10s segments me swap karke jodenge
     total = media.duration(str(src))
@@ -392,18 +395,23 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
         media.run(["ffmpeg", "-y", "-ss", str(i * seg), "-i", str(src), "-t", str(seg),
                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-an",
                    "-pix_fmt", "yuv420p", str(piece)])
-        out = providers.fal_run(endpoint, {
-            "image_url": img_url, "video_url": providers.upload_public(str(piece)),
-            "character_orientation": "video", "mode": m.get("mode", "720p"),
-            "prompt": "same person as the image, performing the exact motion of the reference "
-                      "video, natural body physics, photorealistic, no text"})
-        url = None
-        for k in ("video", "video_url", "url", "output"):
-            v = out.get(k) if isinstance(out, dict) else None
-            if isinstance(v, dict):
-                v = v.get("url")
-            if isinstance(v, str) and v.startswith("http"):
-                url = v; break
+        if vkey:
+            from lib import vmodel
+            url = vmodel.swap(img_url, providers.upload_public(str(piece)),
+                              log=lambda msg: db.log(msg, "info", "vmodel"))
+        else:
+            out = providers.fal_run(endpoint, {
+                "image_url": img_url, "video_url": providers.upload_public(str(piece)),
+                "character_orientation": "video", "mode": m.get("mode", "720p"),
+                "prompt": "same person as the image, performing the exact motion of the reference "
+                          "video, natural body physics, photorealistic, no text"})
+            url = None
+            for k in ("video", "video_url", "url", "output"):
+                v = out.get(k) if isinstance(out, dict) else None
+                if isinstance(v, dict):
+                    v = v.get("url")
+                if isinstance(v, str) and v.startswith("http"):
+                    url = v; break
         if not url:
             raise RuntimeError(f"segment {i+1} me video nahi mili")
         dst = wd / f"sw{i}.mp4"
