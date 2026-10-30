@@ -4,3 +4,4 @@ python-multipart==0.0.20
 requests==2.32.3
 python-dotenv==1.0.1
 edge-tts==7.0.0
+gradio_client==1.7.1

@@ -202,7 +202,7 @@ def _talking(image, audio, workdir, dur):
             providers.download(url, broll)
             out = providers.fal_run(endpoint, {
                 "video_url": providers.upload_public(str(broll)), "audio_url": aud_url})
-        else:
+        if url is None and not vkey:
             out = providers.fal_run(endpoint, {"image_url": img_url, "audio_url": aud_url,
                                                "prompt": prompt})
         url = None
@@ -352,6 +352,33 @@ def publish_youtube(post):
     return up.json().get("id")
 
 
+
+
+def _hf_animate(img_url, vid_url, workdir, log):
+    """HF Wan-Animate fallback (free, ZeroGPU). VModel fail ho to ye chalta hai."""
+    try:
+        from gradio_client import Client
+    except Exception:
+        raise RuntimeError("gradio_client installed nahi hai")
+    spaces = ["hugging-apps/Wan-Animate-2", "Wan-AI/Wan2.2-Animate",
+              "ruslanmv/Wan-2.2-Animate"]
+    last = ""
+    for sp in spaces:
+        try:
+            log(f"hf: trying {sp}")
+            c = Client(sp, verbose=False)
+            out = c.predict(img_url, vid_url, "same person, natural motion",
+                            api_name="/animate")
+            path = out if isinstance(out, str) else (out.get("video") or out.get("path"))
+            if path and Path(path).exists():
+                log(f"hf: ok via {sp}")
+                return Path(path)
+            last = f"{sp}: bad output"
+        except Exception as e:  # noqa: BLE001
+            last = f"{sp}: {str(e)[:90]}"
+            log(f"hf fail {last}")
+    raise RuntimeError(f"HF animate failed -> {last}")
+
 # --------------------------------------------------------------------------- #
 # Upload -> character swap (website se)
 # --------------------------------------------------------------------------- #
@@ -395,11 +422,19 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
         media.run(["ffmpeg", "-y", "-ss", str(i * seg), "-i", str(src), "-t", str(seg),
                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-an",
                    "-pix_fmt", "yuv420p", str(piece)])
+        piece_url = providers.upload_public(str(piece))
+        url = None
         if vkey:
-            from lib import vmodel
-            url = vmodel.swap(img_url, providers.upload_public(str(piece)),
-                              log=lambda msg: db.log(msg, "info", "vmodel"))
-        else:
+            try:
+                from lib import vmodel
+                url = vmodel.swap(img_url, piece_url,
+                                  log=lambda msg: db.log(msg, "info", "vmodel"))
+            except Exception as e:  # noqa: BLE001
+                db.log(f"vmodel failed -> HF fallback: {str(e)[:120]}", "warn", "vmodel")
+        if url is None:
+            got = _hf_animate(img_url, piece_url, wd, lambda m: db.log(m, "info", "hf"))
+            url = providers.upload_public(str(got)) if not str(got).startswith("http") else got
+        if url is None and not vkey:
             out = providers.fal_run(endpoint, {
                 "image_url": img_url, "video_url": providers.upload_public(str(piece)),
                 "character_orientation": "video", "mode": m.get("mode", "720p"),
