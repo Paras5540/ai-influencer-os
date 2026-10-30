@@ -192,6 +192,7 @@
           <button class="primary" onclick="uploadVideo()">Upload &amp; swap</button>
         </div>
         <div id="uplstate" class="muted" style="margin-top:12px"></div>
+        <div id="swapbox"></div>
         <p class="muted" style="font-size:12px;margin-top:10px">
           Rules: mp4/mov · vertical best · 10s se lambi ho to pehle 10s liye jayenge.
           Video aapki ho ya licensed — kisi aur ki Instagram reel nahi.
@@ -429,7 +430,7 @@ async function uploadVideo(){
     if(!r.ok) throw new Error((await r.json()).detail || 'upload failed');
     const j = await r.json();
     st.innerHTML = 'Job #' + j.job + ' chalu — 2-4 min. Progress Dashboard tab me.';
-    toast('Upload ho gaya, swap chalu','ok');
+    toast('Upload ho gaya, swap chalu','ok'); watchJob(j.job);
     loadJobs(); loadStats(); loadUploads();
   }catch(e){ st.textContent = 'Fail: ' + e.message; toast(e.message,'err'); }
 }
@@ -442,6 +443,36 @@ async function loadUploads(){
           <span>${x.name}</span></div>`).join('')
       : '<div class="muted">Koi upload nahi.</div>';
   }catch(e){}
+}
+
+async function watchJob(id){
+  const box=document.getElementById('swapbox');
+  for(let i=0;i<120;i++){
+    await new Promise(r=>s=r||setTimeout(r,3000));
+    try{
+      const js=await api('/api/jobs'); const j=js.find(x=>x.id===id); if(!j) continue;
+      const pct=j.progress||0;
+      box.innerHTML=`<div class="card" style="margin-top:14px">
+        <div class="row"><span class="pill ${j.status==='done'?'ok':j.status==='failed'?'err':'warn'}">${j.status}</span>
+        <b style="font-size:13px">Job #${id}</b>
+        <div class="bar" style="flex:1"><i style="width:${pct}%"></i></div>
+        <span class="muted">${pct}%</span></div>
+        <div class="muted" style="font-size:12px;margin-top:8px">${(j.message||'').replace(/</g,'&lt;')}</div></div>`;
+      if(j.status==='done'){
+        const ps=await api('/api/posts'); const p=ps.find(x=>x.job_id===id)||ps[0];
+        if(p) box.innerHTML+=`<div class="card" style="margin-top:12px">
+          <video src="/media/${p.video}" poster="/media/${p.thumb||''}" controls playsinline
+                 style="width:100%;max-width:280px;border-radius:12px"></video>
+          <div class="row" style="margin-top:10px">
+            <a class="ghost sm" style="padding:9px 12px;border-radius:9px;text-decoration:none"
+               href="/media/${p.video}" download>Download</a>
+            <button class="primary sm" onclick="pub(${p.id},'instagram')">Post to Instagram</button>
+            <button class="ghost sm" onclick="pub(${p.id},'fanvue')">Fanvue</button></div></div>`;
+        return;
+      }
+      if(j.status==='failed') return;
+    }catch(e){}
+  }
 }
 
 /* ---------- character ---------- */
