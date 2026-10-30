@@ -362,9 +362,9 @@ def _hf_animate(shot_path, clip_path, workdir, log):
     # 2) alexnasa — scene/character swap into the video
     try:
         log("hf: alexnasa/Wan2.2-Animate-ZEROGPU /animate_scene")
-        c = Client("alexnasa/Wan2.2-Animate-ZEROGPU", verbose=False)
+        c = Client("alexnasa/Wan2.2-Animate-ZEROGPU", token=os.getenv("HF_TOKEN") or None, verbose=False)
         out = c.predict(input_video=vid, max_duration_s=8, edited_frame=img,
-                        rc_str="Character Swap", resolution_choice="Low Res",
+                        rc_str="Character Swap", resolution_choice="High Res",
                         api_name="/animate_scene")
         path = out[0] if isinstance(out, (list, tuple)) else out
         if isinstance(path, dict):
@@ -379,7 +379,7 @@ def _hf_animate(shot_path, clip_path, workdir, log):
     # 1) IA7Cast — ref_img + video -> animated output
     try:
         log("hf: IA7Cast/Wan2.2-Animate /predict")
-        c = Client("IA7Cast/Wan2.2-Animate", verbose=False)
+        c = Client("IA7Cast/Wan2.2-Animate", token=os.getenv("HF_TOKEN") or None, verbose=False)
         out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-move",
                         model="wan-pro", api_name="/predict")
         path = out[0] if isinstance(out, (list, tuple)) else out
