@@ -1,0 +1,55 @@
+{
+  "_readme": "Har kaam ke liye best option + fallback. Code inhi defaults se chalta hai.",
+  "script_text": {
+    "primary": "gemini-2.5-flash",
+    "why": "free tier, Hindi/Hinglish best",
+    "fallback": "template bank (built-in)",
+    "cost": "₹0"
+  },
+  "image_face_lock": {
+    "primary": "gemini-2.5-flash-image (nano-banana)",
+    "why": "reference edit me face sabse stable",
+    "fallback": "pollinations (keyless) -> SeaArt LoRA (manual)",
+    "cost": "₹0 (free tier)"
+  },
+  "voice": {
+    "primary": "edge-tts hi-IN-SwaraNeural",
+    "why": "unlimited free, cloud-safe fallback",
+    "fallback": "google translate tts -> elevenlabs",
+    "cost": "₹0"
+  },
+  "motion_swap_dance": {
+    "primary": "fal-ai/kling-video/v1.6/pro/motion-control",
+    "why": "character consistency sabse best, 5s clip",
+    "fallback": "fal-ai/wan/v2.2-animate/motion-transfer (sasta)",
+    "source": "assets/motion/*.mp4 (licensed: Mixkit/Pexels) ya aapki video",
+    "cost": "₹15-40 per reel"
+  },
+  "talking_head": {
+    "primary": "fal-ai/kling-video/v1.6/standard/avatar",
+    "fallback": "fal-ai/sync-lipsync/v2",
+    "cost": "₹15-30 per reel"
+  },
+  "music": {
+    "primary": "self-generated beats (assets/music)",
+    "why": "copyright-free, zero cost",
+    "fallback": "licensed clip audio",
+    "cost": "₹0"
+  },
+  "publish": {
+    "instagram": "Graph API v21 (free)",
+    "youtube": "Data API v3 (free)",
+    "premium": "Fanvue API (free, 80/20)",
+    "cost": "₹0"
+  },
+  "hosting": {
+    "render": "GitHub Actions cron (free 2000 min/mo)",
+    "dashboard": "Oracle Always Free (24GB, no sleep)",
+    "cost": "₹0"
+  },
+  "total_per_reel": {
+    "free_path": "₹0",
+    "with_dance_swap": "₹15-40",
+    "with_talking_head": "+₹15-30"
+  }
+}
