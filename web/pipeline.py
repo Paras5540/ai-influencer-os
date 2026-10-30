@@ -360,15 +360,22 @@ def _hf_animate(img_url, vid_url, workdir, log):
         from gradio_client import Client
     except Exception:
         raise RuntimeError("gradio_client installed nahi hai")
-    spaces = ["hugging-apps/Wan-Animate-2", "Wan-AI/Wan2.2-Animate",
-              "ruslanmv/Wan-2.2-Animate"]
+    # verified live (RUNNING) — 2026-10-31
+    spaces = ["alexnasa/Wan2.2-Animate-ZEROGPU", "IA7Cast/Wan2.2-Animate"]
     last = ""
     for sp in spaces:
         try:
             log(f"hf: trying {sp}")
             c = Client(sp, verbose=False)
-            out = c.predict(img_url, vid_url, "same person, natural motion",
-                            api_name="/animate")
+            out = None
+            for api in ("/animate", "/generate", "/infer"):
+                try:
+                    out = c.predict(img_url, vid_url, "same person, natural motion", api_name=api)
+                    break
+                except Exception:
+                    continue
+            if out is None:
+                raise RuntimeError("no working api_name")
             path = out if isinstance(out, str) else (out.get("video") or out.get("path"))
             if path and Path(path).exists():
                 log(f"hf: ok via {sp}")
