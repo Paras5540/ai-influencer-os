@@ -354,37 +354,46 @@ def publish_youtube(post):
 
 
 
-def _hf_animate(img_url, vid_url, workdir, log):
-    """HF Wan-Animate fallback (free, ZeroGPU). VModel fail ho to ye chalta hai."""
+def _hf_animate(shot_path, clip_path, workdir, log):
+    """HF fallback — verified live spaces (2026-10-31), real API names/args."""
+    from gradio_client import Client, handle_file
+    img, vid = handle_file(str(shot_path)), handle_file(str(clip_path))
+
+    # 1) IA7Cast — ref_img + video -> animated output
     try:
-        from gradio_client import Client
-    except Exception:
-        raise RuntimeError("gradio_client installed nahi hai")
-    # verified live (RUNNING) — 2026-10-31
-    spaces = ["alexnasa/Wan2.2-Animate-ZEROGPU", "IA7Cast/Wan2.2-Animate"]
-    last = ""
-    for sp in spaces:
-        try:
-            log(f"hf: trying {sp}")
-            c = Client(sp, verbose=False)
-            out = None
-            for api in ("/animate", "/generate", "/infer"):
-                try:
-                    out = c.predict(img_url, vid_url, "same person, natural motion", api_name=api)
-                    break
-                except Exception:
-                    continue
-            if out is None:
-                raise RuntimeError("no working api_name")
-            path = out if isinstance(out, str) else (out.get("video") or out.get("path"))
-            if path and Path(path).exists():
-                log(f"hf: ok via {sp}")
-                return Path(path)
-            last = f"{sp}: bad output"
-        except Exception as e:  # noqa: BLE001
-            last = f"{sp}: {str(e)[:90]}"
-            log(f"hf fail {last}")
-    raise RuntimeError(f"HF animate failed -> {last}")
+        log("hf: IA7Cast/Wan2.2-Animate /predict")
+        c = Client("IA7Cast/Wan2.2-Animate", verbose=False)
+        out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-move",
+                        model="wan-pro", api_name="/predict")
+        path = out[0] if isinstance(out, (list, tuple)) else out
+        if isinstance(path, dict):
+            path = path.get("video") or path.get("path")
+        if path and Path(path).exists() and Path(path).stat().st_size > 50000:
+            log("hf: ok (IA7Cast)")
+            return Path(path)
+        log(f"hf: IA7Cast bad output {str(out)[:90]}")
+    except Exception as e:  # noqa: BLE001
+        log(f"hf: IA7Cast fail {str(e)[:110]}")
+
+    # 2) alexnasa — scene/character swap into the video
+    try:
+        log("hf: alexnasa/Wan2.2-Animate-ZEROGPU /animate_scene")
+        c = Client("alexnasa/Wan2.2-Animate-ZEROGPU", verbose=False)
+        out = c.predict(input_video=vid, max_duration_s=8, edited_frame=img,
+                        rc_str="Character Swap", resolution_choice="Low Res",
+                        api_name="/animate_scene")
+        path = out[0] if isinstance(out, (list, tuple)) else out
+        if isinstance(path, dict):
+            path = path.get("video") or path.get("path")
+        if path and Path(path).exists() and Path(path).stat().st_size > 50000:
+            log("hf: ok (alexnasa)")
+            return Path(path)
+        log(f"hf: alexnasa bad output {str(out)[:90]}")
+    except Exception as e:  # noqa: BLE001
+        log(f"hf: alexnasa fail {str(e)[:110]}")
+
+    raise RuntimeError("HF spaces se swap nahi hua")
+
 
 # --------------------------------------------------------------------------- #
 # Upload -> character swap (website se)
@@ -439,8 +448,8 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
             except Exception as e:  # noqa: BLE001
                 db.log(f"vmodel failed -> HF fallback: {str(e)[:120]}", "warn", "vmodel")
         if url is None:
-            got = _hf_animate(img_url, piece_url, wd, lambda m: db.log(m, "info", "hf"))
-            url = providers.upload_public(str(got)) if not str(got).startswith("http") else got
+            got = _hf_animate(shot, piece, wd, lambda m: db.log(m, "info", "hf"))
+            url = str(got)
         if url is None and not vkey:
             out = providers.fal_run(endpoint, {
                 "image_url": img_url, "video_url": providers.upload_public(str(piece)),
