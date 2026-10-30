@@ -45,6 +45,15 @@ def check_source(ref: Path, source_url: str = ""):
 
 def fal_motion(shot: Path, ref: Path, ep):
     from lib import providers
+    if os.getenv("VMODEL_API_KEY"):
+        from lib import vmodel
+        img = providers.upload_public(str(shot))
+        vid = providers.upload_public(str(ref))
+        url = vmodel.swap(img, vid)
+        tmp = ROOT / "out" / f"swap_{int(time.time())}.mp4"
+        tmp.parent.mkdir(parents=True, exist_ok=True)
+        providers.download(url, tmp)
+        return tmp
     key = os.getenv("FAL_KEY")
     if not key:
         raise SystemExit(
