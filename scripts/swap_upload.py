@@ -42,8 +42,7 @@ def save(l):
 
 
 def main():
-    import media
-    import montage
+    from lib import media
     import motion
 
     UPLOADS.mkdir(parents=True, exist_ok=True)
