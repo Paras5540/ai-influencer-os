@@ -117,6 +117,20 @@ def collect():
     print(f"content/: {len(index)} reels")
 
 
+def auto_publish():
+    """Instagram keys ho to nayi reel turant post ho jaye. Na ho to chup-chaap skip."""
+    if not (os.getenv("IG_USER_ID") and os.getenv("IG_ACCESS_TOKEN")):
+        print("auto-post: Instagram keys missing — sirf website pe gayi")
+        return
+    try:
+        publish("instagram")
+        print("auto-post: Instagram ✅")
+    except SystemExit:
+        raise
+    except Exception as e:  # noqa: BLE001
+        print(f"auto-post failed: {str(e)[:160]}")
+
+
 def publish(platform, price=None):
     if platform == "fanvue":
         cmd = [sys.executable, "src/06_fanvue.py", "--queue"]
@@ -137,7 +151,8 @@ def publish(platform, price=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", required=True,
-                    choices=["build", "reel", "instagram", "ig", "youtube", "fanvue", "collect"])
+                    choices=["build", "reel", "motion", "instagram", "ig", "youtube",
+                             "fanvue", "collect"])
     ap.add_argument("--count", type=int, default=1)
     ap.add_argument("--price", type=int, default=None)
     a = ap.parse_args()
@@ -145,6 +160,16 @@ def main():
     os.environ.setdefault("CHARACTER_DIR", "character_v6")
     if a.task in ("build", "reel"):
         build(a.count, force=(a.task == "reel"))
+        auto_publish()
+    elif a.task == "motion":
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import swap_reel
+        made = swap_reel.run(a.count)
+        if made:
+            collect()
+            auto_publish()
+        else:
+            print("no motion reel built — collect/publish skip")
     elif a.task == "collect":
         collect()
     else:

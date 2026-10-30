@@ -9,12 +9,14 @@ on:
     - cron: "30 13 * * *"   # 19:00 IST build
     - cron: "0 7 * * *"     # 12:30 IST IG
     - cron: "0 15 * * *"    # 20:30 IST IG
+    - cron: "30 2 * * *"    # 08:00 IST motion/swap reel
+    - cron: "30 12 * * *"   # 18:00 IST motion/swap reel
     - cron: "30 3 * * *"    # 09:00 IST Fanvue
     - cron: "30 16 * * *"   # 22:00 IST Fanvue
   workflow_dispatch:
     inputs:
       task:
-        description: "build | instagram | youtube | fanvue"
+        description: "motion | reel | build | collect | instagram | youtube | fanvue"
         default: "build"
       count:
         description: "kitni reels (build ke liye)"
@@ -84,6 +86,7 @@ jobs:
           if [ -z "$TASK" ]; then
             case "${{ github.event.schedule }}" in
               "30 1 * * *"|"30 7 * * *"|"30 13 * * *") TASK=build ;;
+              "30 2 * * *"|"30 12 * * *")             TASK=motion ;;
               "0 7 * * *"|"0 15 * * *")               TASK=instagram ;;
               "30 3 * * *"|"30 16 * * *")             TASK=fanvue ;;
               *) TASK=build ;;
