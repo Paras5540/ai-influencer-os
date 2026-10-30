@@ -380,7 +380,7 @@ def _hf_animate(shot_path, clip_path, workdir, log):
     try:
         log("hf: IA7Cast/Wan2.2-Animate /predict")
         c = Client("IA7Cast/Wan2.2-Animate", token=os.getenv("HF_TOKEN") or None, verbose=False)
-        out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-move",
+        out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-mix",
                         model="wan-pro", api_name="/predict")
         path = out[0] if isinstance(out, (list, tuple)) else out
         if isinstance(path, dict):
@@ -482,7 +482,7 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
     dur = media.duration(str(raw))
     ass = wd / "hook.ass"
     ass.write_text(montage.ass(hook, dur), encoding="utf-8")
-    music = montage.pick_music()
+    music = None
     final = wd / "final.mp4"
     cmd = ["ffmpeg", "-y", "-i", str(raw)]
     if music:
