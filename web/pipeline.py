@@ -359,22 +359,6 @@ def _hf_animate(shot_path, clip_path, workdir, log):
     from gradio_client import Client, handle_file
     img, vid = handle_file(str(shot_path)), handle_file(str(clip_path))
 
-    # 1) IA7Cast — ref_img + video -> animated output
-    try:
-        log("hf: IA7Cast/Wan2.2-Animate /predict")
-        c = Client("IA7Cast/Wan2.2-Animate", verbose=False)
-        out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-move",
-                        model="wan-pro", api_name="/predict")
-        path = out[0] if isinstance(out, (list, tuple)) else out
-        if isinstance(path, dict):
-            path = path.get("video") or path.get("path")
-        if path and Path(path).exists() and Path(path).stat().st_size > 50000:
-            log("hf: ok (IA7Cast)")
-            return Path(path)
-        log(f"hf: IA7Cast bad output {str(out)[:90]}")
-    except Exception as e:  # noqa: BLE001
-        log(f"hf: IA7Cast fail {str(e)[:110]}")
-
     # 2) alexnasa — scene/character swap into the video
     try:
         log("hf: alexnasa/Wan2.2-Animate-ZEROGPU /animate_scene")
@@ -391,6 +375,22 @@ def _hf_animate(shot_path, clip_path, workdir, log):
         log(f"hf: alexnasa bad output {str(out)[:90]}")
     except Exception as e:  # noqa: BLE001
         log(f"hf: alexnasa fail {str(e)[:110]}")
+
+    # 1) IA7Cast — ref_img + video -> animated output
+    try:
+        log("hf: IA7Cast/Wan2.2-Animate /predict")
+        c = Client("IA7Cast/Wan2.2-Animate", verbose=False)
+        out = c.predict(ref_img=img, video=vid, model_id="wan2.2-animate-move",
+                        model="wan-pro", api_name="/predict")
+        path = out[0] if isinstance(out, (list, tuple)) else out
+        if isinstance(path, dict):
+            path = path.get("video") or path.get("path")
+        if path and Path(path).exists() and Path(path).stat().st_size > 50000:
+            log("hf: ok (IA7Cast)")
+            return Path(path)
+        log(f"hf: IA7Cast bad output {str(out)[:90]}")
+    except Exception as e:  # noqa: BLE001
+        log(f"hf: IA7Cast fail {str(e)[:110]}")
 
     raise RuntimeError("HF spaces se swap nahi hua")
 
