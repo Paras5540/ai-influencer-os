@@ -22,10 +22,10 @@ SHOTS = ROOT / "assets" / "shots"
 MUSIC = ROOT / "assets" / "music"
 OUT = ROOT / "out"
 W, H = 1080, 1920
-SHOT_SEC = float(os.getenv("SHOT_SEC", "1.1"))
+SHOT_SEC = float(os.getenv("SHOT_SEC", "0.7"))
 
 CAPTIONS = [
-    ("3 OUTFITS, EK DIN", "Ek din, teen look. Kaunsa best laga? 👇\n\n"
+    ("3 OUTFITS, EK DIN", "Save kar lo. Kaunsa best laga? 👇\n\n"
      "#outfitideas #indianfashion #mumbai #grwm #reels #aigeneratedcharacter"),
     ("DESI GIRL SUMMER", "Saree se street style tak — sab ek hi din me.\n\n"
      "#desigirl #summerlook #indianwear #fashionreels #aigeneratedcharacter"),
@@ -40,7 +40,7 @@ CAPTIONS = [
 ]
 
 CAPTIONS_BY_TAG = {
-    "dance":   ("", "Movement > words. Sound on 🔊\n\n#dance #trending #reels #mumbai #aigeneratedcharacter"),
+    "dance":   ("", "Save kar lo, sound on 🔊\n\n#dance #trending #reels #mumbai #aigeneratedcharacter"),
     "desi":    ("", "Saree kinda evening 🖤\n\n#desigirl #sareelove #indianwear #reels #aigeneratedcharacter"),
     "gym":     ("", "Gym se glow tak 💪\n\n#gymtok #fitness #indiancreator #reels #aigeneratedcharacter"),
     "night":   ("", "Kaali dress, halki smile.\n\n#nightout #partylook #mumbai #reels #aigeneratedcharacter"),

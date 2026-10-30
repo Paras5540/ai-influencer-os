@@ -4,9 +4,9 @@ name: pipeline
 # 3 builds/day + publish slots. Times UTC me (IST - 5:30).
 on:
   schedule:
-    - cron: "30 1 * * *"    # 07:00 IST build
-    - cron: "30 7 * * *"    # 13:00 IST build
-    - cron: "30 13 * * *"   # 19:00 IST build
+    - cron: "0 7 * * *"     # 12:30 IST build
+    - cron: "0 16 * * *"    # 21:30 IST build
+    - cron: "0 16 * * *"    # 21:30 IST build
     - cron: "0 7 * * *"     # 12:30 IST IG
     - cron: "0 15 * * *"    # 20:30 IST IG
     - cron: "30 2 * * *"    # 08:00 IST motion/swap reel
