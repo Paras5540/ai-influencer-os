@@ -1,15 +1,15 @@
 {
   "shot_01.png": {
     "tag": "fashion",
-    "hook": "3 LOOKS, EK DIN"
+    "hook": "3 LOOKS"
   },
   "shot_02.png": {
     "tag": "dance",
-    "hook": "SHE CAN MOVE"
+    "hook": "WATCH THIS"
   },
   "shot_03.png": {
     "tag": "gym",
-    "hook": "GYM SE GLOW"
+    "hook": "GYM GLOW"
   },
   "shot_04.png": {
     "tag": "desi",
@@ -17,11 +17,11 @@
   },
   "shot_05.png": {
     "tag": "street",
-    "hook": "STREET STYLE"
+    "hook": "STREET FIT"
   },
   "shot_06.png": {
     "tag": "cafe",
-    "hook": "CAFE DIARY"
+    "hook": "CAFE DAY"
   },
   "shot_07.png": {
     "tag": "night",
