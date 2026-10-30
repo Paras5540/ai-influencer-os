@@ -264,6 +264,33 @@ def publish(req: Request, payload: dict):
 
 
 # --------------------------------------------------------------------------- #
+@app.post("/api/upload_video")
+async def upload_video(req: Request, file: UploadFile = File(...), hook: str = Form("")):
+    """Website se video upload -> character swap job."""
+    guard(req)
+    if not (file.filename or "").lower().endswith((".mp4", ".mov", ".m4v")):
+        raise HTTPException(status_code=400, detail="mp4/mov video chahiye")
+    updir = db.DATA / "uploads"
+    updir.mkdir(parents=True, exist_ok=True)
+    dest = updir / f"{secrets.token_hex(4)}_{file.filename}"
+    dest.write_bytes(await file.read())
+    jid = db.create_job("swap", {"file": str(dest), "hook": hook})
+    db.log(f"upload received: {file.filename} ({dest.stat().st_size//1024} KB) -> job #{jid}",
+           "info", "upload")
+    return {"job": jid, "file": dest.name}
+
+
+@app.get("/api/uploads")
+def list_uploads(req: Request):
+    guard(req)
+    updir = db.DATA / "uploads"
+    if not updir.exists():
+        return []
+    return [{"name": p.name, "kb": p.stat().st_size // 1024}
+            for p in sorted(updir.glob("*.mp4")) + sorted(updir.glob("*.mov"))]
+
+
+# --------------------------------------------------------------------------- #
 @app.get("/api/schedule")
 def schedule(req: Request):
     guard(req)

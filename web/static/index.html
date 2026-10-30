@@ -131,6 +131,7 @@
     <nav>
       <button data-tab="dash" class="on">Dashboard</button>
       <button data-tab="posts">Reels</button>
+      <button data-tab="upload">Upload + Swap</button>
       <button data-tab="char">Character</button>
       <button data-tab="keys">APIs</button>
       <button data-tab="sched">Schedule</button>
@@ -175,6 +176,30 @@
         <span class="muted">Har reel yahin aayegi. Caption edit karo, phir platform pe publish.</span>
       </div>
       <div class="posts" id="postlist"></div>
+    </section>
+
+    <!-- UPLOAD + SWAP -->
+    <section id="tab-upload" class="hide">
+      <h2>Video upload → character swap</h2>
+      <p class="muted" style="margin:-6px 0 16px">Apni dance/trend video daalo. Poori reel me aapki ladki
+        ka chehra aa jayega (motion wahi rahega). Ban jaane par Reels tab se ek click me post.</p>
+
+      <div class="card">
+        <input id="vidfile" type="file" accept="video/mp4,video/quicktime"/>
+        <div style="height:10px"></div>
+        <div class="row">
+          <input id="vidhook" placeholder="Hook text (optional) — jaise SHE CAN MOVE" style="max-width:320px"/>
+          <button class="primary" onclick="uploadVideo()">Upload &amp; swap</button>
+        </div>
+        <div id="uplstate" class="muted" style="margin-top:12px"></div>
+        <p class="muted" style="font-size:12px;margin-top:10px">
+          Rules: mp4/mov · vertical best · 10s se lambi ho to pehle 10s liye jayenge.
+          Video aapki ho ya licensed — kisi aur ki Instagram reel nahi.
+        </p>
+      </div>
+
+      <h2>Uploads</h2>
+      <div class="card" id="uplist"><div class="muted">Koi upload nahi.</div></div>
     </section>
 
     <!-- CHARACTER -->
@@ -314,10 +339,11 @@ async function logout(){ await fetch('/api/logout',{method:'POST',credentials:'s
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   TAB=b.dataset.tab;
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
-  ['dash','posts','char','keys','sched','deploy','logs'].forEach(t=>{
+  ['dash','posts','upload','char','keys','sched','deploy','logs'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('hide',t!==TAB);
   });
   if(TAB==='posts') loadPosts();
+  if(TAB==='upload'){ loadUploads(); }
   if(TAB==='char') loadChar();
   if(TAB==='keys') loadIntegrations();
   if(TAB==='sched') loadSched();
@@ -388,6 +414,34 @@ async function saveCap(id){
 async function pub(id,platform){
   try{ await api('/api/publish',{method:'POST',body:JSON.stringify({post_id:id,platform})});
     toast(platform+' publish queued','ok'); loadJobs(); }catch(e){ toast(e.message,'err'); }
+}
+
+/* ---------- upload + swap ---------- */
+async function uploadVideo(){
+  const f = document.getElementById('vidfile').files[0];
+  if(!f) return toast('Pehle video chuno','err');
+  const hook = document.getElementById('vidhook').value.trim();
+  const fd = new FormData(); fd.append('file', f); fd.append('hook', hook);
+  const st = document.getElementById('uplstate');
+  st.textContent = 'Upload ho raha hai... (' + Math.round(f.size/1048576) + ' MB)';
+  try{
+    const r = await fetch('/api/upload_video', {method:'POST', credentials:'same-origin', body: fd});
+    if(!r.ok) throw new Error((await r.json()).detail || 'upload failed');
+    const j = await r.json();
+    st.innerHTML = 'Job #' + j.job + ' chalu — 2-4 min. Progress Dashboard tab me.';
+    toast('Upload ho gaya, swap chalu','ok');
+    loadJobs(); loadStats(); loadUploads();
+  }catch(e){ st.textContent = 'Fail: ' + e.message; toast(e.message,'err'); }
+}
+async function loadUploads(){
+  try{
+    const u = await api('/api/uploads');
+    const el = document.getElementById('uplist');
+    el.innerHTML = u.length
+      ? u.map(x=>`<div class="job"><span class="pill">${x.kb} KB</span>
+          <span>${x.name}</span></div>`).join('')
+      : '<div class="muted">Koi upload nahi.</div>';
+  }catch(e){}
 }
 
 /* ---------- character ---------- */
@@ -549,6 +603,7 @@ function initApp(){
   loadStats(); loadJobs(); loadLogs();
   setInterval(()=>{ loadStats(); loadJobs(); loadLogs();
     if(TAB==='posts') loadPosts();
+  if(TAB==='upload'){ loadUploads(); }
     if(TAB==='deploy') loadDeploy();
     if(TAB==='keys' && !DIRTY) loadIntegrations(); }, 5000);
 }

@@ -16,6 +16,11 @@ def _run_job(job):
         if kind == "build":
             pipeline.build_reel(jid)
             return
+        if kind == "swap":
+            pipeline.swap_video(jid, payload["file"],
+                                hook=payload.get("hook") or "NEW DROP",
+                                caption=payload.get("caption") or "")
+            return
         if kind == "publish":
             platform = payload["platform"]
             post = db.get_post(payload["post_id"])

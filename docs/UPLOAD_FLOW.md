@@ -26,3 +26,17 @@
 ## Free manual (bina FAL key)
 kling.ai ya higgsfield.ai -> Motion Control -> apni video + `assets/shots/shot_02.png` ->
 output download -> `assets/motion/` me daalo -> `python scripts/swap_reel.py --local assets/motion/my.mp4`
+
+---
+
+# Website se karna ho (GitHub bilkul nahi)
+
+Dashboard ke **Upload + Swap** tab se:
+1. video drag karo -> "Upload & swap"
+2. 2-4 min me reel **Reels** tab me (preview ready)
+3. wahi se **IG button** = post (ek confirm)
+
+Iske liye dashboard host hona chahiye (GitHub Pages pe nahi ho sakta — wahan ffmpeg/upload nahi chalta):
+- **Oracle Always Free** (₹0, recommended) -> `bash deploy/free-oracle.sh`
+- Docker/VPS -> `bash deploy/deploy.sh --tunnel`
+- Render -> `render.yaml`

@@ -350,3 +350,93 @@ def publish_youtube(post):
     if up.status_code >= 400:
         raise RuntimeError(f"YT upload: {up.text[:200]}")
     return up.json().get("id")
+
+
+# --------------------------------------------------------------------------- #
+# Upload -> character swap (website se)
+# --------------------------------------------------------------------------- #
+def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
+    """User ki video + character face -> fal motion control -> reel."""
+    import sys as _sys
+    _sys.path.insert(0, str(ROOT / "scripts"))
+    import montage  # noqa: E402
+
+    wd = RENDERS / f"job{job_id}"
+    wd.mkdir(parents=True, exist_ok=True)
+    src = Path(src_path)
+    if not src.exists():
+        raise RuntimeError("uploaded video nahi mili")
+
+    key = _setting("FAL_KEY")
+    if not key:
+        raise RuntimeError("FAL_KEY missing — swap engine ke liye fal.ai key chahiye "
+                           "(Settings → APIs → FAL_KEY)")
+    os.environ["FAL_KEY"] = key
+
+    # 10s trim (motion model limit)
+    db.update_job(job_id, progress=15, message="trim 10s")
+    clip = wd / "ref.mp4"
+    media.run(["ffmpeg", "-y", "-i", str(src), "-t", "10", "-c:v", "libx264",
+               "-preset", "veryfast", "-crf", "23", "-an", "-pix_fmt", "yuv420p", str(clip)])
+
+    shot = _master()
+    db.update_job(job_id, progress=35, message="character swap (fal)")
+    ep = json.loads((ROOT / "config" / "endpoints.json").read_text(encoding="utf-8"))
+    m = ep.get("motion", {})
+    endpoint = m.get("endpoint", "fal-ai/kling-video/v1.6/pro/motion-control")
+
+    img_url = providers.upload_public(str(shot))
+    vid_url = providers.upload_public(str(clip))
+    out = providers.fal_run(endpoint, {
+        "image_url": img_url, "video_url": vid_url,
+        "character_orientation": "video", "mode": m.get("mode", "720p"),
+        "prompt": "same person as the image, performing the exact motion of the reference video, "
+                  "natural body physics, photorealistic, no text"})
+
+    url = None
+    for k in ("video", "video_url", "url", "output"):
+        v = out.get(k) if isinstance(out, dict) else None
+        if isinstance(v, dict):
+            v = v.get("url")
+        if isinstance(v, str) and v.startswith("http"):
+            url = v
+            break
+    if not url:
+        raise RuntimeError(f"swap response me video nahi mili: {str(out)[:200]}")
+    raw = wd / "swapped.mp4"
+    providers.download(url, raw)
+
+    db.update_job(job_id, progress=80, message="render 1080x1920")
+    dur = min(media.duration(str(raw)), 10.0)
+    ass = wd / "hook.ass"
+    ass.write_text(montage.ass(hook, dur), encoding="utf-8")
+    music = montage.pick_music()
+    final = wd / "final.mp4"
+    cmd = ["ffmpeg", "-y", "-i", str(raw)]
+    if music:
+        cmd += ["-stream_loop", "-1", "-i", str(music), "-filter_complex",
+                f"[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+                f"ass={ass}[v];[1:a]volume=0.5[a]", "-map", "[v]", "-map", "[a]"]
+    else:
+        cmd += ["-vf", f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,ass={ass}",
+                "-map", "0:v"]
+    cmd += ["-t", f"{dur:.2f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+            "-pix_fmt", "yuv420p", "-r", "30"]
+    if music:
+        cmd += ["-c:a", "aac", "-b:a", "160k", "-shortest"]
+    cmd += [str(final)]
+    media.run(cmd)
+
+    thumb = wd / "thumb.jpg"
+    media.run(["ffmpeg", "-y", "-ss", "0.4", "-i", str(final), "-frames:v", "1",
+               "-q:v", "3", str(thumb)])
+
+    pid = db.add_post(job_id=job_id, title=hook, hook=hook,
+                      caption=caption or f"{hook}\n\n#reels #trending #aigeneratedcharacter",
+                      video=str(final.relative_to(db.DATA)),
+                      thumb=str(thumb.relative_to(db.DATA)),
+                      platform="instagram", status="ready", created=time.time())
+    db.update_job(job_id, status="done", progress=100,
+                  message=f"swap reel ready (#{pid}, {dur:.1f}s)")
+    db.log(f"swap reel #{pid} ready", "info", "swap")
+    return pid
