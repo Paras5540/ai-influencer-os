@@ -48,6 +48,8 @@ jobs:
         run: |
           cat > .env <<EOF
           FAL_KEY=${{ secrets.FAL_KEY }}
+          HF_TOKEN=${{ secrets.HF_TOKEN }}
+          USE_HF_SWAP=1
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           CHARACTER_CONFIG=character_v5_locked.json
           CHARACTER_DIR=character_v6
