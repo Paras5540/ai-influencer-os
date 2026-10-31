@@ -390,9 +390,19 @@ async function doBuild(){
 /* ---------- posts ---------- */
 async function loadPosts(){
   try{
-    const ps=await api('/api/posts');
+    let ps=await api('/api/posts');
     const el=document.getElementById('postlist');
-    if(!ps.length){ el.innerHTML='<div class="muted">Abhi koi reel nahi. Dashboard se “Generate now” dabao.</div>'; return; }
+    if(!ps.length){
+      const g=await fetch('https://paras5540.github.io/ai-influencer-os/index.json?t='+Date.now()).then(r=>r.json()).catch(()=>[]);
+      el.innerHTML = g.length ? g.map(i=>`<div class="post">
+        <video src="${i.video.startsWith('http')?i.video:'https://paras5540.github.io/ai-influencer-os/'+i.video}" controls playsinline preload="metadata"></video>
+        <div class="body"><div class="hook">${i.hook||''}</div>
+        <div class="cap">${(i.caption||'').slice(0,90)}</div>
+        <div class="btns"><a class="ghost sm" style="padding:7px 10px;border-radius:8px;text-decoration:none"
+          href="${i.video.startsWith('http')?i.video:'https://paras5540.github.io/ai-influencer-os/'+i.video}" download>Download</a></div></div></div>`).join('')
+        : '<div class="muted">Abhi koi reel nahi.</div>';
+      return;
+    }
     el.innerHTML=ps.map(p=>`
       <div class="post">
         <video src="/media/${p.video}" poster="/media/${p.thumb||''}" controls preload="metadata"></video>
