@@ -199,6 +199,9 @@
         </p>
       </div>
 
+      <h2>Gallery output (GitHub)</h2>
+      <div class="grid" id="swapped"></div>
+
       <h2>Uploads</h2>
       <div class="card" id="uplist"><div class="muted">Koi upload nahi.</div></div>
     </section>
@@ -344,7 +347,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
     document.getElementById('tab-'+t).classList.toggle('hide',t!==TAB);
   });
   if(TAB==='posts') loadPosts();
-  if(TAB==='upload'){ loadUploads(); }
+  if(TAB==='upload'){ loadUploads(); loadSwapped(); }
   if(TAB==='char') loadChar();
   if(TAB==='keys') loadIntegrations();
   if(TAB==='sched') loadSched();
@@ -431,8 +434,23 @@ async function uploadVideo(){
     const j = await r.json();
     st.innerHTML = 'Job #' + j.job + ' chalu — 2-4 min. Progress Dashboard tab me.';
     toast('Upload ho gaya, swap chalu','ok'); watchJob(j.job);
-    loadJobs(); loadStats(); loadUploads();
+    loadJobs(); loadStats(); loadUploads(); setTimeout(loadSwapped, 20000);
   }catch(e){ st.textContent = 'Fail: ' + e.message; toast(e.message,'err'); }
+}
+async function loadSwapped(){
+  const el=document.getElementById('swapped'); if(!el) return;
+  try{
+    const r=await fetch('https://paras5540.github.io/ai-influencer-os/index.json?t='+Date.now());
+    const d=await r.json();
+    el.innerHTML=d.slice(0,6).map(i=>`<div class="card">
+      <video src="https://paras5540.github.io/ai-influencer-os/${i.video}" controls playsinline
+             poster="https://paras5540.github.io/ai-influencer-os/${i.poster||''}"
+             style="width:100%;aspect-ratio:9/16;object-fit:cover"></video>
+      <div class="body"><div class="hook">${i.hook||''}</div>
+      <a class="ghost sm" style="padding:7px 10px;border-radius:8px;text-decoration:none"
+         href="https://paras5540.github.io/ai-influencer-os/${i.video}" download>Download</a></div>
+    </div>`).join('');
+  }catch(e){ el.innerHTML='<div class="muted">Gallery load nahi hui</div>'; }
 }
 async function loadUploads(){
   try{
@@ -634,7 +652,7 @@ function initApp(){
   loadStats(); loadJobs(); loadLogs();
   setInterval(()=>{ loadStats(); loadJobs(); loadLogs();
     if(TAB==='posts') loadPosts();
-  if(TAB==='upload'){ loadUploads(); }
+  if(TAB==='upload'){ loadUploads(); loadSwapped(); }
     if(TAB==='deploy') loadDeploy();
     if(TAB==='keys' && !DIRTY) loadIntegrations(); }, 5000);
 }

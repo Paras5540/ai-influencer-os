@@ -43,8 +43,23 @@ def check_source(ref: Path, source_url: str = ""):
         raise SystemExit(f"❌ Source host allowed nahi: {source_url}\n   Allowed: {', '.join(ALLOWED_HOSTS)}")
 
 
+def hf_swap(shot: Path, ref: Path, log=print):
+    """Free HF Wan-Animate (High Res) — GitHub Actions me 7GB RAM, OOM nahi."""
+    from gradio_client import Client, handle_file
+    tok = os.getenv("HF_TOKEN")
+    c = Client("alexnasa/Wan2.2-Animate-ZEROGPU", token=tok or None, verbose=False)
+    out = c.predict(input_video=handle_file(str(ref)), max_duration_s=10,
+                    edited_frame=handle_file(str(shot)), rc_str="Character Swap",
+                    resolution_choice="High Res", api_name="/animate_scene")
+    p = out[0] if isinstance(out, (list, tuple)) else out
+    log(f"hf swap ok: {p}")
+    return Path(p)
+
+
 def fal_motion(shot: Path, ref: Path, ep):
     from lib import providers
+    if os.getenv("HF_TOKEN") or os.getenv("USE_HF_SWAP") == "1":
+        return hf_swap(shot, ref)
     if os.getenv("VMODEL_API_KEY"):
         from lib import vmodel
         img = providers.upload_public(str(shot))
