@@ -410,6 +410,18 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
     if not src.exists():
         raise RuntimeError("uploaded video nahi mili")
 
+    # Render 512MB pe OOM hota hai -> swap GitHub Actions (7GB) me bhejo
+    try:
+        import gh_worker
+        if gh_worker.enabled() and os.getenv("SWAP_ON_GITHUB", "1") == "1":
+            db.update_job(job_id, progress=30, message="GitHub Actions me swap chal raha hai (7GB RAM)")
+            if gh_worker.dispatch_swap(str(src_path), hook):
+                db.update_job(job_id, status="done", progress=100,
+                              message="Swap GitHub Actions me chalu — 3-6 min me gallery me aayegi")
+                return None
+    except Exception as e:  # noqa: BLE001
+        db.log(f"gh dispatch fail: {str(e)[:120]}", "warn", "gh")
+
     vkey = _setting("VMODEL_API_KEY")
     key = _setting("FAL_KEY")
     if not vkey and not key:
