@@ -397,13 +397,52 @@ def _hf_animate(shot_path, clip_path, workdir, log):
 
 
 
+def _best_frame(frames, key, wd):
+    """Puri video ke frames me se wo frame jo character sabse clear dikhe."""
+    import base64, requests as _r
+    if len(frames) < 2 or not key:
+        return frames[len(frames) // 2] if frames else None
+    parts = [{"text": "In these photos only ONE person appears. Reply with just the number "
+                       "(0-based) of the photo where the person is clearest: full body visible, "
+                       "face not blurred, good light. Reply a single digit."}]
+    for f in frames:
+        parts.append({"text": f"photo {frames.index(f)}"})
+        parts.append({"inline_data": {"mime_type": "image/jpeg",
+                                      "data": base64.b64encode(f.read_bytes()).decode()}})
+    try:
+        rr = _r.post("https://generativelanguage.googleapis.com/v1beta/models/"
+                     "gemini-2.5-flash:generateContent?key=" + key,
+                     json={"contents": [{"role": "user", "parts": parts}],
+                           "generationConfig": {"maxOutputTokens": 8}}, timeout=90)
+        if rr.status_code == 200:
+            txt = rr.json()["candidates"][0]["content"]["parts"][0]["text"]
+            import re as _re
+            m = _re.search(r"\d", txt)
+            if m and int(m.group()) < len(frames):
+                db.log(f"best frame: {int(m.group())}/{len(frames)-1}", "info", "swap")
+                return frames[int(m.group())]
+    except Exception as e:  # noqa: BLE001
+        db.log(f"best-frame fail: {str(e)[:80]}", "warn", "swap")
+    return frames[len(frames) // 2]
+
+
 def _pose_image(src_video, wd, shot_path):
     """Frame 1 se pose/outfit detect -> usi pose me character ki nayi image."""
     import base64
     key = _setting("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEYHSHSH")
-    frame = wd / "f1.jpg"
-    media.run(["ffmpeg", "-y", "-ss", "0.2", "-i", str(src_video), "-frames:v", "1",
-               "-q:v", "2", str(frame)])
+    # poori video se 5 frames lo, best frame chuno (character clear dikhe)
+    dur = media.duration(str(src_video))
+    picks = [max(0.2, dur * f) for f in (0.15, 0.3, 0.5, 0.7, 0.85)]
+    frames = []
+    for n, t in enumerate(picks):
+        f = wd / f"f{n}.jpg"
+        media.run(["ffmpeg", "-y", "-ss", f"{t:.2f}", "-i", str(src_video), "-frames:v", "1",
+                   "-q:v", "2", str(f)])
+        if f.exists():
+            frames.append(f)
+    frame = frames[len(frames) // 2] if frames else wd / "f1.jpg"
+    if key and frames:
+        frame = _best_frame(frames, key, wd) or frame
     if not key:
         db.log("no Gemini key -> master image use", "warn", "swap")
         return shot_path
