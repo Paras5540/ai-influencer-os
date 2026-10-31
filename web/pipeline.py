@@ -395,6 +395,53 @@ def _hf_animate(shot_path, clip_path, workdir, log):
     raise RuntimeError("HF spaces se swap nahi hua")
 
 
+
+
+def _pose_image(src_video, wd, shot_path):
+    """Frame 1 se pose/outfit detect -> usi pose me character ki nayi image."""
+    import base64
+    key = _setting("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEYHSHSH")
+    frame = wd / "f1.jpg"
+    media.run(["ffmpeg", "-y", "-ss", "0.2", "-i", str(src_video), "-frames:v", "1",
+               "-q:v", "2", str(frame)])
+    if not key:
+        db.log("no Gemini key -> master image use", "warn", "swap")
+        return shot_path
+    os.environ["GEMINI_API_KEY"] = key
+    try:
+        b64 = base64.b64encode(frame.read_bytes()).decode()
+        desc = providers.gemini_text(
+            "Describe only the person's POSE, OUTFIT, CAMERA ANGLE and LIGHTING in one line. "
+            "Do not describe their face or identity.", "gemini-2.5-flash", tries=2,
+            json_mode=False) if False else None
+        # vision call (Gemini text API with inline image)
+        import requests as _r
+        body = {"contents":[{"role":"user","parts":[
+            {"text":"Describe only POSE, OUTFIT, CAMERA ANGLE, LIGHTING in one line. "
+                    "Never describe face or identity."},
+            {"inline_data":{"mime_type":"image/jpeg","data":b64}}]}],
+            "generationConfig":{"maxOutputTokens":120}}
+        rr = _r.post("https://generativelanguage.googleapis.com/v1beta/models/"
+                     "gemini-2.5-flash:generateContent?key=" + key, json=body, timeout=90)
+        pose = ""
+        if rr.status_code == 200:
+            pose = rr.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        db.log(f"pose: {pose[:120]}", "info", "swap")
+        prompt = ("Using the reference image as the exact identity (same face, hair, mole — do not change), "
+                  f"now show the same woman in this pose/outfit/lighting: {pose}. "
+                  "Slight variations in outfit are fine. Photorealistic phone photo, full body, "
+                  "vertical 9:16, visible skin texture, no text.")
+        img = providers.gemini_image(prompt, "gemini-2.5-flash-image",
+                                     reference_images=[str(shot_path)], aspect="9:16", tries=2)
+        out = wd / "char_pose.png"
+        out.write_bytes(img)
+        db.log("character image generated for this pose", "info", "swap")
+        return out
+    except Exception as e:  # noqa: BLE001
+        db.log(f"pose image fail -> master: {str(e)[:120]}", "warn", "swap")
+        return shot_path
+
+
 # --------------------------------------------------------------------------- #
 # Upload -> character swap (website se)
 # --------------------------------------------------------------------------- #
@@ -438,6 +485,10 @@ def swap_video(job_id, src_path, hook="NEW DROP", caption=""):
     db.update_job(job_id, progress=15, message=f"segments: {n} (total {total:.0f}s)")
 
     shot = _master()
+    try:
+        shot = _pose_image(src, wd, shot)
+    except Exception as e:  # noqa: BLE001
+        db.log(f"pose step skip: {str(e)[:100]}", "warn", "swap")
     ep = json.loads((ROOT / "config" / "endpoints.json").read_text(encoding="utf-8"))
     m = ep.get("motion", {})
     endpoint = m.get("endpoint", "fal-ai/kling-video/v1.6/pro/motion-control")
