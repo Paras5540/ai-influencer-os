@@ -1,5 +1,17 @@
 [
   {
+    "id": "2026-11-10-montage-213037",
+    "hook": "Cafe Day",
+    "caption": [
+      "",
+      "Bandra wali shaam ☕\n\n#cafevibes #mumbai #bandra #aesthetic #aigeneratedcharacter"
+    ],
+    "status": "ready",
+    "created": "2026-11-10T21:30:54.065218",
+    "video": "2026-11-10-montage-213037/final.mp4",
+    "poster": "2026-11-10-montage-213037/thumb.jpg"
+  },
+  {
     "id": "2026-11-09-montage-235318",
     "hook": "Watch This",
     "caption": [
@@ -130,17 +142,5 @@
     "created": "2026-10-30T17:58:56.486404",
     "video": "2026-10-30-montage-175837/final.mp4",
     "poster": "2026-10-30-montage-175837/thumb.jpg"
-  },
-  {
-    "id": "2026-10-30-montage-174158",
-    "hook": "Beach Day",
-    "caption": [
-      "",
-      "Goa state of mind 🌊\n\n#beachvibes #goa #summerlook #reels #aigeneratedcharacter"
-    ],
-    "status": "ready",
-    "created": "2026-10-30T17:42:01.864153",
-    "video": "2026-10-30-montage-174158/final.mp4",
-    "poster": "2026-10-30-montage-174158/thumb.jpg"
   }
 ]
